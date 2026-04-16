@@ -1,25 +1,69 @@
-import Pokedex, { type PokeAPI } from 'pokedex-promise-v2';
 import { TYPE_KO } from './pokemonLocale';
 import type { PokemonDex } from '../types/pokemon';
 
-export const P = new Pokedex();
-
+const BASE = 'https://pokeapi.co/api/v2';
 const GEN1_IDS = Array.from({ length: 151 }, (_, i) => i + 1);
+
+interface ApiName {
+  language: { name: string };
+  name: string;
+}
+
+interface ApiPokemon {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  sprites: {
+    front_default: string | null;
+    other?: {
+      'official-artwork'?: {
+        front_default: string | null;
+      };
+    };
+  };
+  types: Array<{ slot: number; type: { name: string; url: string } }>;
+  abilities: Array<{ ability: { name: string; url: string } }>;
+}
+
+interface ApiSpecies {
+  names: ApiName[];
+  evolution_chain: { url: string };
+}
+
+interface ApiAbility {
+  names: ApiName[];
+}
+
+interface ApiChainNode {
+  species: { name: string; url: string };
+  evolves_to: ApiChainNode[];
+}
+
+interface ApiEvolutionChain {
+  chain: ApiChainNode;
+}
+
+async function getJson<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${url}`);
+  return res.json() as Promise<T>;
+}
 
 export async function fetchPokemonDex(id: number): Promise<PokemonDex> {
   const [pokemon, species] = await Promise.all([
-    P.getPokemonByName(id),
-    P.getPokemonSpeciesByName(id),
+    getJson<ApiPokemon>(`${BASE}/pokemon/${id}`),
+    getJson<ApiSpecies>(`${BASE}/pokemon-species/${id}`),
   ]);
 
   const abilities = await Promise.all(
     pokemon.abilities.map(async (a) => {
-      const data = await P.getAbilityByName(a.ability.name);
+      const data = await getJson<ApiAbility>(a.ability.url);
       return data.names.find((n) => n.language.name === 'ko')?.name ?? a.ability.name;
     }),
   );
 
-  const chainData = await P.getResource(species.evolution_chain.url) as { chain: PokeAPI.Chain };
+  const chainData = await getJson<ApiEvolutionChain>(species.evolution_chain.url);
   const evolutionChain = flattenChain(chainData.chain);
 
   return {
@@ -41,11 +85,12 @@ export async function fetchGen1Dex(): Promise<PokemonDex[]> {
   return Promise.all(GEN1_IDS.map((id) => fetchPokemonDex(id)));
 }
 
-function flattenChain(chain: PokeAPI.Chain): number[] {
+function flattenChain(chain: ApiChainNode): number[] {
   const ids: number[] = [];
-  let node: PokeAPI.Chain | undefined = chain;
+  let node: ApiChainNode | undefined = chain;
   while (node) {
-    const id = Number(node.species.url.match(/\/(\d+)\/$/)?.[1]);
+    const match = node.species.url.match(/\/(\d+)\/$/);
+    const id = match ? Number(match[1]) : NaN;
     if (id) ids.push(id);
     node = node.evolves_to[0];
   }
