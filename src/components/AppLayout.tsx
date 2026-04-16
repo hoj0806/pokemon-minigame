@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router-dom';
-import { useDarkMode } from '../hooks/useDarkMode';
+import { useThemeStore } from '../store/themeStore';
 
 export function AppLayout() {
-  const { isDark, toggle } = useDarkMode();
+  const { isDark, toggle } = useThemeStore();
 
   return (
     <div className="min-h-screen bg-[--color-surface]">
