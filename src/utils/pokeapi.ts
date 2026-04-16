@@ -1,48 +1,15 @@
 import { TYPE_KO } from './pokemonLocale';
 import type { PokemonDex } from '../types/pokemon';
+import type {
+  ApiAbility,
+  ApiChainNode,
+  ApiEvolutionChain,
+  ApiPokemon,
+  ApiSpecies,
+} from '../types/pokeapi';
 
 const BASE = 'https://pokeapi.co/api/v2';
 const GEN1_IDS = Array.from({ length: 151 }, (_, i) => i + 1);
-
-interface ApiName {
-  language: { name: string };
-  name: string;
-}
-
-interface ApiPokemon {
-  id: number;
-  name: string;
-  height: number;
-  weight: number;
-  sprites: {
-    front_default: string | null;
-    other?: {
-      'official-artwork'?: {
-        front_default: string | null;
-      };
-    };
-  };
-  types: Array<{ slot: number; type: { name: string; url: string } }>;
-  abilities: Array<{ ability: { name: string; url: string } }>;
-}
-
-interface ApiSpecies {
-  names: ApiName[];
-  evolution_chain: { url: string };
-}
-
-interface ApiAbility {
-  names: ApiName[];
-}
-
-interface ApiChainNode {
-  species: { name: string; url: string };
-  evolves_to: ApiChainNode[];
-}
-
-interface ApiEvolutionChain {
-  chain: ApiChainNode;
-}
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url);

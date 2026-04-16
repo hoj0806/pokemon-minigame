@@ -1,15 +1,6 @@
 import { create } from 'zustand';
-import type { PokemonDex } from '../types/pokemon';
+import type { PokedexState } from '../types/pokedexStore';
 import { fetchGen1Dex } from '../utils/pokeapi';
-
-interface PokedexState {
-  data: PokemonDex[];
-  isLoading: boolean;
-  error: Error | null;
-  hasLoaded: boolean;
-  loadGen1: () => Promise<void>;
-  getById: (id: number) => PokemonDex | undefined;
-}
 
 export const usePokedexStore = create<PokedexState>((set, get) => ({
   data: [],
