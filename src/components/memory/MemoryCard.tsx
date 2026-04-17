@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import clsx from 'clsx';
-import type { PokemonDex } from '../types/pokemon';
+import type { PokemonDex } from '../../types/pokemon';
 
 interface MemoryCardProps {
   pokemon: PokemonDex | null;

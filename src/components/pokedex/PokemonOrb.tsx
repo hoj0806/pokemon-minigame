@@ -1,4 +1,4 @@
-import type { PokemonDex } from '../types/pokemon';
+import type { PokemonDex } from '../../types/pokemon';
 
 interface PokemonOrbProps {
   pokemon: PokemonDex;

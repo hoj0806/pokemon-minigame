@@ -1,6 +1,6 @@
-import { usePokedexStore } from '../store/pokedexStore';
+import { usePokedexStore } from '../../store/pokedexStore';
 import { TypeBadge } from './TypeBadge';
-import type { PokemonDex } from '../types/pokemon';
+import type { PokemonDex } from '../../types/pokemon';
 
 interface PokemonDetailModalProps {
   pokemon: PokemonDex;

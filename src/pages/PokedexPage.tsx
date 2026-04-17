@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { usePokedexStore } from '../store/pokedexStore';
-import { LoadingSpinner } from '../components/LoadingSpinner';
-import { ErrorView } from '../components/ErrorView';
-import { PokemonOrb } from '../components/PokemonOrb';
-import { PokemonDetailModal } from '../components/PokemonDetailModal';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { ErrorView } from '../components/common/ErrorView';
+import { PokemonOrb } from '../components/pokedex/PokemonOrb';
+import { PokemonDetailModal } from '../components/pokedex/PokemonDetailModal';
 import type { PokemonDex } from '../types/pokemon';
 
 export default function PokedexPage() {
