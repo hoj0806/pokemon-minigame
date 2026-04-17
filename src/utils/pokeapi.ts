@@ -36,10 +36,7 @@ export async function fetchPokemonDex(id: number): Promise<PokemonDex> {
   return {
     id: pokemon.id,
     koreanName: species.names.find((n) => n.language.name === 'ko')?.name ?? pokemon.name,
-    imageUrl:
-      pokemon.sprites.other?.['official-artwork']?.front_default ??
-      pokemon.sprites.front_default ??
-      '',
+    imageUrl: pokemon.sprites.front_default ?? '',
     types: pokemon.types.map((t) => TYPE_KO[t.type.name] ?? t.type.name),
     height: pokemon.height / 10,
     weight: pokemon.weight / 10,
