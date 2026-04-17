@@ -1,4 +1,4 @@
-import type { HighScoreEntry } from '../types/highScore';
+import type { HighScoreEntry } from '../../types/highScore';
 
 interface HighScoreTableProps {
   entries: HighScoreEntry[];

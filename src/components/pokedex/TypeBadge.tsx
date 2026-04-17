@@ -1,4 +1,4 @@
-import { TYPE_COLOR } from '../utils/pokemonLocale';
+import { TYPE_COLOR } from '../../utils/pokemonLocale';
 
 interface TypeBadgeProps {
   type: string;

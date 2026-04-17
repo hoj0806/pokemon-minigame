@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import type { Difficulty } from '../types/game';
-import { GameTimer } from '../components/GameTimer';
-import { MemoryCard } from '../components/MemoryCard';
-import { HighScoreTable } from '../components/HighScoreTable';
+import { GameTimer } from '../components/game/GameTimer';
+import { MemoryCard } from '../components/memory/MemoryCard';
+import { HighScoreTable } from '../components/game/HighScoreTable';
 import { usePokedexStore } from '../store/pokedexStore';
 
 interface GameLocationState {
