@@ -1,8 +1,15 @@
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useThemeStore } from '../store/themeStore';
+import { usePokedexStore } from '../store/pokedexStore';
 
 export function AppLayout() {
   const { isDark, toggle } = useThemeStore();
+  const loadGen1 = usePokedexStore((s) => s.loadGen1);
+
+  useEffect(() => {
+    loadGen1();
+  }, [loadGen1]);
 
   return (
     <div className="min-h-screen bg-[--color-surface]">
