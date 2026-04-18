@@ -24,7 +24,11 @@ export function isTop5(key: string, score: number): boolean {
 export function addHighScore(key: string, entry: HighScoreEntry): void {
   const entries = getHighScores(key);
   const next = [...entries, entry]
-    .sort((a, b) => b.score - a.score)
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        new Date(a.playedAt).getTime() - new Date(b.playedAt).getTime(),
+    )
     .slice(0, MAX_ENTRIES);
   localStorage.setItem(key, JSON.stringify(next));
 }
