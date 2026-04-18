@@ -22,7 +22,7 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
     >
       <div
         className="relative w-full max-w-md max-h-[85vh] flex flex-col
-                   rounded-[--radius-card] bg-[--color-surface-overlay]
+                   rounded-[--radius-card] bg-white dark:bg-gray-700
                    border border-[--color-border] shadow-[--shadow-game]
                    overflow-hidden"
         onClick={(e) => e.stopPropagation()}
@@ -31,8 +31,8 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
         <button
           onClick={onClose}
           className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center
-                     rounded-full bg-[--color-surface-raised] text-[--color-on-surface-muted]
-                     hover:text-[--color-on-surface] hover:bg-[--color-border] transition-colors text-lg"
+                     rounded-full bg-gray-100 dark:bg-gray-600 text-[--color-on-surface-muted]
+                     hover:text-[--color-on-surface] hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors text-lg"
           aria-label="닫기"
         >
           ✕
@@ -54,7 +54,7 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
           <div className="flex justify-center mb-4">
             <div
               className="w-32 h-32 rounded-full flex items-center justify-center
-                         bg-[--color-surface-raised]
+                         bg-gray-100 dark:bg-gray-600
                          ring-2 ring-blue-200/60
                          shadow-[0_0_28px_rgba(147,197,253,0.6),inset_0_1px_0_rgba(255,255,255,0.5)]"
             >
@@ -85,7 +85,7 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
               {pokemon.abilities.map((a) => (
                 <span
                   key={a}
-                  className="px-3 py-1 rounded-[--radius-badge] bg-[--color-surface-raised]
+                  className="px-3 py-1 rounded-[--radius-badge] bg-gray-100 dark:bg-gray-600
                              border border-[--color-border] text-xs font-galmuri text-[--color-on-surface]"
                 >
                   {a}
@@ -103,7 +103,7 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
                     <div className="flex flex-col items-center gap-1">
                       <div
                         className="w-14 h-14 rounded-full flex items-center justify-center
-                                   bg-[--color-surface-raised] ring-1 ring-blue-200/50
+                                   bg-gray-100 dark:bg-gray-600 ring-1 ring-blue-200/50
                                    shadow-[0_0_10px_rgba(147,197,253,0.4)]"
                       >
                         {evo.imageUrl && (
@@ -140,7 +140,7 @@ interface InfoBoxProps {
 function InfoBox({ label, value }: InfoBoxProps) {
   return (
     <div className="flex flex-col items-center gap-0.5 py-3 rounded-[--radius-md]
-                    bg-[--color-surface-raised] border border-[--color-border]">
+                    bg-gray-100 dark:bg-gray-600 border border-[--color-border]">
       <span className="text-xs font-galmuri text-[--color-on-surface-muted]">{label}</span>
       <span className="text-sm font-galmuri font-semibold text-[--color-on-surface]">{value}</span>
     </div>
