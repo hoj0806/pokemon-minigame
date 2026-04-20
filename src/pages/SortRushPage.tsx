@@ -162,7 +162,7 @@ export default function SortRushPage() {
           </span>
         </div>
 
-        <div className="w-full max-w-sm rounded-[--radius-card] bg-[--color-surface-raised] border border-[--color-border] shadow-[--shadow-card] p-4">
+        <div className="w-full max-w-sm rounded-[--radius-card] bg-[--color-surface-overlay] border-2 border-[#111827] shadow-[0_6px_0_0_#111827] p-4">
           <p className="font-galmuri text-sm font-bold text-[--color-on-surface] mb-3">하이스코어</p>
           {scoresSaved ? (
             <HighScoreTable entries={getHighScores(highScoreKey)} />
@@ -176,13 +176,13 @@ export default function SortRushPage() {
         <div className="flex gap-3">
           <button
             onClick={handleRestart}
-            className="bg-[--color-brand] hover:bg-[--color-brand-dark] text-white font-galmuri font-semibold px-6 py-2 rounded-[--radius-sm] transition-colors"
+            className="font-galmuri bg-[#EE1515] text-[#FFCB05] font-bold px-6 py-2 rounded-[--radius-sm] border-2 border-[#111827] shadow-[0_4px_0_0_#111827] active:shadow-[0_1px_0_0_#111827] active:translate-y-[3px] transition-all duration-75 cursor-pointer"
           >
             다시하기
           </button>
           <button
             onClick={() => navigate('/game')}
-            className="bg-transparent border border-[--color-border] text-[--color-on-surface] font-galmuri px-6 py-2 rounded-[--radius-sm] transition-colors hover:border-[--color-border-strong]"
+            className="font-galmuri bg-[#FFCB05] text-[#111827] font-bold px-6 py-2 rounded-[--radius-sm] border-2 border-[#111827] shadow-[0_4px_0_0_#111827] active:shadow-[0_1px_0_0_#111827] active:translate-y-[3px] transition-all duration-75 cursor-pointer"
           >
             게임 선택
           </button>
