@@ -9,7 +9,7 @@ interface GameInfo {
   title: string;
   description: string;
   rules: string[];
-  difficulties: { id: Difficulty; label: string; detail: string }[];
+  difficulties: { id: Difficulty; label: string; detail: string }[] | null;
 }
 
 const GAMES: GameInfo[] = [
@@ -35,6 +35,13 @@ const GAMES: GameInfo[] = [
       { id: 'hard', label: '어려움', detail: '기준 6마리' },
     ],
   },
+  {
+    id: 'merge',
+    title: '포켓몬 머지',
+    description: '포켓몬을 합체시켜 더 강한 포켓몬으로 진화시켜라',
+    rules: ['제한 시간 없음', '같은 포켓몬이 닿으면 합체', '데드라인을 넘으면 게임 종료'],
+    difficulties: null,
+  },
 ];
 
 const DIFFICULTY_COLOR: Record<Difficulty, string> = {
@@ -48,8 +55,12 @@ export default function GameSelectPage() {
   const [step, setStep] = useState<Step>('select');
   const [selectedGame, setSelectedGame] = useState<GameId | null>(null);
 
-  const handleGameSelect = (id: GameId) => {
-    setSelectedGame(id);
+  const handleGameSelect = (game: GameInfo) => {
+    if (game.difficulties === null) {
+      navigate(`/game/${game.id}`);
+      return;
+    }
+    setSelectedGame(game.id);
     setStep('difficulty');
   };
 
@@ -59,7 +70,8 @@ export default function GameSelectPage() {
   };
 
   if (step === 'difficulty' && selectedGame !== null) {
-    const game = GAMES.find((g) => g.id === selectedGame)!;
+    const game = GAMES.find((g) => g.id === selectedGame);
+    if (!game || game.difficulties === null) return null;
 
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-57px)] gap-8 p-6">
@@ -98,18 +110,18 @@ export default function GameSelectPage() {
       <h1 className="font-galmuri text-2xl font-bold text-[--color-on-surface]">게임 선택</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
-        {GAMES.map(({ id, title, description, rules }) => (
+        {GAMES.map((game) => (
           <button
-            key={id}
-            onClick={() => handleGameSelect(id)}
+            key={game.id}
+            onClick={() => handleGameSelect(game)}
             className="rounded-[--radius-card] bg-[--color-surface-raised] border border-[--color-border] shadow-[--shadow-card] p-8 text-left cursor-pointer hover:shadow-[--shadow-elevated] transition-shadow"
           >
             <h2 className="font-galmuri text-xl font-bold text-[--color-on-surface] mb-1">
-              {title}
+              {game.title}
             </h2>
-            <p className="text-sm text-[--color-on-surface-muted] mb-4">{description}</p>
+            <p className="text-sm text-[--color-on-surface-muted] mb-4">{game.description}</p>
             <ul className="flex flex-col gap-1">
-              {rules.map((rule) => (
+              {game.rules.map((rule) => (
                 <li key={rule} className="text-xs text-[--color-on-surface-muted] flex gap-1.5">
                   <span>·</span>
                   <span>{rule}</span>
@@ -118,18 +130,6 @@ export default function GameSelectPage() {
             </ul>
           </button>
         ))}
-
-        <div className="relative rounded-[--radius-card] bg-[--color-surface-raised] border border-[--color-border] shadow-[--shadow-card] p-8 text-left opacity-50 cursor-not-allowed overflow-hidden">
-          <h2 className="font-galmuri text-xl font-bold text-[--color-on-surface] mb-1">
-            포켓몬 머지
-          </h2>
-          <p className="text-sm text-[--color-on-surface-muted]">
-            포켓몬을 합체시켜 더 강한 포켓몬으로 진화시켜라
-          </p>
-          <span className="absolute top-3 right-3 font-galmuri text-xs font-bold bg-[--color-border] text-[--color-on-surface-muted] px-2 py-0.5 rounded-[--radius-badge]">
-            준비 중
-          </span>
-        </div>
       </div>
     </div>
   );

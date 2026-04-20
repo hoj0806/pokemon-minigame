@@ -6,6 +6,7 @@ import type { Difficulty, GameId } from '../types/game';
 interface GameTab {
   id: GameId;
   label: string;
+  hasDifficulty: boolean;
 }
 
 interface DifficultyOption {
@@ -14,8 +15,9 @@ interface DifficultyOption {
 }
 
 const GAME_TABS: GameTab[] = [
-  { id: 'memory', label: '메모리 매치' },
-  { id: 'sortrush', label: '정렬 러시' },
+  { id: 'memory', label: '메모리 매치', hasDifficulty: true },
+  { id: 'sortrush', label: '정렬 러시', hasDifficulty: true },
+  { id: 'merge', label: '포켓몬 머지', hasDifficulty: false },
 ];
 
 const DIFFICULTIES: DifficultyOption[] = [
@@ -28,7 +30,11 @@ export default function HighScorePage() {
   const [activeGame, setActiveGame] = useState<GameId>('memory');
   const [activeDifficulty, setActiveDifficulty] = useState<Difficulty>('easy');
 
-  const key = `highScore:${activeGame}:${activeDifficulty}`;
+  const activeTab = GAME_TABS.find((t) => t.id === activeGame);
+  const hasDifficulty = activeTab?.hasDifficulty ?? false;
+  const key = hasDifficulty
+    ? `highScore:${activeGame}:${activeDifficulty}`
+    : `highScore:${activeGame}`;
   const entries = getHighScores(key);
 
   return (
@@ -53,21 +59,23 @@ export default function HighScorePage() {
         ))}
       </div>
 
-      <div className="flex gap-2 mb-6">
-        {DIFFICULTIES.map(({ id, label }) => (
-          <button
-            key={id}
-            onClick={() => setActiveDifficulty(id)}
-            className={`font-galmuri px-4 py-1.5 rounded-[--radius-sm] text-sm transition-colors ${
-              activeDifficulty === id
-                ? 'bg-[--color-accent] text-white font-semibold'
-                : 'border border-[--color-border] text-[--color-on-surface-muted]'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      {hasDifficulty && (
+        <div className="flex gap-2 mb-6">
+          {DIFFICULTIES.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => setActiveDifficulty(id)}
+              className={`font-galmuri px-4 py-1.5 rounded-[--radius-sm] text-sm transition-colors ${
+                activeDifficulty === id
+                  ? 'bg-[--color-accent] text-white font-semibold'
+                  : 'border border-[--color-border] text-[--color-on-surface-muted]'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="w-full max-w-md rounded-[--radius-card] bg-[--color-surface-raised] border border-[--color-border] shadow-[--shadow-card] p-4">
         <HighScoreTable entries={entries} />
