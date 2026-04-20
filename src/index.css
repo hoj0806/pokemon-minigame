@@ -22,6 +22,15 @@
     --border:          55  65  81;
     --border-strong:   75  85  99;
   }
+
+  body {
+    background: linear-gradient(135deg, rgb(var(--surface)) 0%, #fecaca 100%);
+    min-height: 100vh;
+  }
+
+  .dark body {
+    background: linear-gradient(135deg, rgb(var(--surface)) 0%, #1e0a32 100%);
+  }
 }
 
 @theme {

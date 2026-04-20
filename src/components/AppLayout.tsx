@@ -12,7 +12,7 @@ export function AppLayout() {
   }, [loadGen1]);
 
   return (
-    <div className="min-h-screen bg-[--color-surface]">
+    <div className="min-h-screen">
       <header className="flex items-center justify-between px-6 py-3 border-b border-[--color-border]">
         <span className="font-galmuri text-lg text-[--color-on-surface]">Pokemon Minigames</span>
         <button
