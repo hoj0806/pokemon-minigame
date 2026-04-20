@@ -60,14 +60,17 @@ export default function PokedexPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-57px)] bg-[--color-surface] p-6">
       <div
         className="w-full max-w-4xl max-h-[80vh] flex flex-col
-                   rounded-[--radius-card] bg-white dark:bg-gray-800
-                   border border-[--color-border] shadow-[--shadow-elevated]"
+                   rounded-[--radius-card]
+                   bg-[#1a1a2e]
+                   border-4 border-[#111827]
+                   shadow-[0_8px_0_0_#111827,0_12px_40px_rgba(0,0,0,0.4)]"
       >
-        <div className="px-6 py-4 border-b border-[--color-border] shrink-0">
-          <h1 className="font-galmuri text-xl font-bold text-[--color-on-surface]">
-            포켓몬 도감
+        {/* 헤더 */}
+        <div className="px-6 py-4 border-b-4 border-[#111827] shrink-0 bg-[#EE1515] rounded-t-[calc(var(--radius-card)-4px)]">
+          <h1 className="font-galmuri text-xl font-bold text-white drop-shadow-sm">
+            📖 포켓몬 도감
           </h1>
-          <p className="text-xs text-[--color-on-surface-muted] mt-0.5">1세대 151마리</p>
+          <p className="text-xs text-red-100 mt-0.5 font-galmuri">1세대 151마리</p>
 
           <div className="flex gap-2 mt-3 flex-wrap">
             {SORT_BUTTONS.map(({ key, label }) => {
@@ -77,10 +80,10 @@ export default function PokedexPage() {
                 <button
                   key={key}
                   onClick={() => handleSort(key)}
-                  className={`font-galmuri text-xs px-3 py-1.5 rounded-[--radius-badge] border transition-colors ${
+                  className={`font-galmuri text-xs px-4 py-2 rounded-[--radius-sm] border-2 border-[#111827] transition-all duration-75 cursor-pointer ${
                     isActive
-                      ? 'bg-blue-500 text-white border-blue-500'
-                      : 'bg-[--color-surface-raised] text-[--color-on-surface] border-[--color-border] hover:border-blue-400'
+                      ? 'bg-[#FFCB05] text-[#111827] font-bold shadow-[0_4px_0_0_#111827] active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]'
+                      : 'bg-white text-[#111827] shadow-[0_4px_0_0_#111827] hover:bg-gray-100 active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]'
                   }`}
                 >
                   {label}
@@ -91,19 +94,21 @@ export default function PokedexPage() {
 
             <button
               onClick={handleReset}
-              className="font-galmuri text-xs px-3 py-1.5 rounded-[--radius-badge] border
-                         bg-[--color-surface-raised] text-[--color-on-surface]
-                         border-[--color-border] hover:border-red-400 transition-colors"
+              className="font-galmuri text-xs px-4 py-2 rounded-[--radius-sm] border-2 border-[#111827]
+                         bg-white text-[#111827]
+                         shadow-[0_4px_0_0_#111827] hover:bg-red-50
+                         active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]
+                         transition-all duration-75 cursor-pointer"
             >
               리셋
             </button>
 
             <button
               onClick={() => setBookmarkOnly((prev) => !prev)}
-              className={`font-galmuri text-xs px-3 py-1.5 rounded-[--radius-badge] border transition-colors ${
+              className={`font-galmuri text-xs px-4 py-2 rounded-[--radius-sm] border-2 border-[#111827] transition-all duration-75 cursor-pointer ${
                 bookmarkOnly
-                  ? 'bg-yellow-400 text-gray-900 border-yellow-400'
-                  : 'bg-[--color-surface-raised] text-[--color-on-surface] border-[--color-border] hover:border-yellow-400'
+                  ? 'bg-yellow-400 text-[#111827] font-bold shadow-[0_4px_0_0_#111827] active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]'
+                  : 'bg-white text-[#111827] shadow-[0_4px_0_0_#111827] hover:bg-yellow-50 active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]'
               }`}
             >
               {bookmarkOnly ? '★ 북마크' : '☆ 북마크'}
@@ -111,7 +116,17 @@ export default function PokedexPage() {
           </div>
         </div>
 
-        <div className="overflow-y-auto p-6">
+        {/* 스크롤 영역 */}
+        <div
+          className="overflow-y-auto p-6 bg-[#e8e0d0] rounded-b-[calc(var(--radius-card)-4px)]
+                     [&::-webkit-scrollbar]:w-2
+                     [&::-webkit-scrollbar-track]:bg-[#c8bfaf]
+                     [&::-webkit-scrollbar-track]:rounded-full
+                     [&::-webkit-scrollbar-thumb]:bg-[#EE1515]
+                     [&::-webkit-scrollbar-thumb]:rounded-full
+                     [&::-webkit-scrollbar-thumb]:border-2
+                     [&::-webkit-scrollbar-thumb]:border-[#111827]"
+        >
           {isLoading && <LoadingSpinner />}
           {error && <ErrorView message={error.message} onRetry={loadGen1} />}
           {!isLoading && !error && (

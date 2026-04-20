@@ -39,3 +39,24 @@ export const TYPE_COLOR: Record<string, string> = {
   강철: 'bg-gray-500',
   페어리: 'bg-pink-300',
 };
+
+export const TYPE_CARD_GRADIENT: Record<string, string> = {
+  노말: 'from-gray-400 to-gray-500',
+  불꽃: 'from-orange-400 to-red-600',
+  물: 'from-blue-400 to-blue-600',
+  전기: 'from-yellow-300 to-yellow-500',
+  풀: 'from-green-400 to-green-600',
+  얼음: 'from-cyan-300 to-cyan-500',
+  격투: 'from-red-500 to-red-700',
+  독: 'from-purple-400 to-purple-700',
+  땅: 'from-yellow-500 to-amber-700',
+  비행: 'from-indigo-300 to-indigo-500',
+  에스퍼: 'from-pink-400 to-pink-600',
+  벌레: 'from-lime-400 to-lime-600',
+  바위: 'from-yellow-600 to-amber-800',
+  고스트: 'from-purple-600 to-purple-900',
+  드래곤: 'from-indigo-500 to-purple-700',
+  악: 'from-gray-700 to-gray-900',
+  강철: 'from-slate-400 to-slate-600',
+  페어리: 'from-pink-300 to-pink-500',
+};

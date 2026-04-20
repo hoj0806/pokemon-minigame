@@ -1,5 +1,8 @@
-import { usePokedexStore } from '../../store/pokedexStore';
+import { useRef, useState } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { TypeBadge } from './TypeBadge';
+import { TYPE_CARD_GRADIENT } from '../../utils/pokemonLocale';
+import { getBookmarks, toggleBookmark } from '../../utils/bookmark';
 import type { PokemonDex } from '../../types/pokemon';
 
 interface PokemonDetailModalProps {
@@ -7,158 +10,163 @@ interface PokemonDetailModalProps {
   onClose: () => void;
 }
 
-export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps) {
-  const getById = usePokedexStore((s) => s.getById);
-
-  const evolutionNames = pokemon.evolutionChain.map((id) => {
-    const p = getById(id);
-    return p ? { id, name: p.koreanName, imageUrl: p.imageUrl } : { id, name: `#${id}`, imageUrl: '' };
-  });
-
+function PokeballIcon() {
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-md max-h-[85vh] flex flex-col
-                   rounded-[--radius-card] bg-white dark:bg-gray-700
-                   border border-[--color-border] shadow-[--shadow-game]
-                   overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* 닫기 버튼 */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center
-                     rounded-full bg-gray-100 dark:bg-gray-600 text-[--color-on-surface-muted]
-                     hover:text-[--color-on-surface] hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors text-lg"
-          aria-label="닫기"
-        >
-          ✕
-        </button>
-
-        {/* 스크롤 영역 */}
-        <div className="overflow-y-auto p-6">
-          {/* 번호 + 이름 */}
-          <div className="flex flex-col items-center gap-1 mb-4">
-            <span className="font-galmuri text-xs text-[--color-on-surface-muted]">
-              #{String(pokemon.id).padStart(3, '0')}
-            </span>
-            <h2 className="font-galmuri text-2xl font-bold text-[--color-on-surface]">
-              {pokemon.koreanName}
-            </h2>
-          </div>
-
-          {/* 스프라이트 */}
-          <div className="flex justify-center mb-4">
-            <div
-              className="w-32 h-32 rounded-full flex items-center justify-center
-                         bg-gray-100 dark:bg-gray-600
-                         ring-2 ring-blue-200/60
-                         shadow-[0_0_28px_rgba(147,197,253,0.6),inset_0_1px_0_rgba(255,255,255,0.5)]"
-            >
-              <img
-                src={pokemon.imageUrl}
-                alt={pokemon.koreanName}
-                className="w-24 h-24 object-contain [image-rendering:pixelated]"
-              />
-            </div>
-          </div>
-
-          {/* 타입 */}
-          <div className="flex justify-center gap-2 mb-5">
-            {pokemon.types.map((t) => (
-              <TypeBadge key={t} type={t} />
-            ))}
-          </div>
-
-          {/* 기본 정보 */}
-          <div className="grid grid-cols-2 gap-3 mb-5">
-            <InfoBox label="키" value={`${pokemon.height.toFixed(1)} m`} />
-            <InfoBox label="몸무게" value={`${pokemon.weight.toFixed(1)} kg`} />
-          </div>
-
-          {/* 특성 */}
-          <Section title="특성">
-            <div className="flex flex-wrap gap-2">
-              {pokemon.abilities.map((a) => (
-                <span
-                  key={a}
-                  className="px-3 py-1 rounded-[--radius-badge] bg-gray-100 dark:bg-gray-600
-                             border border-[--color-border] text-xs font-galmuri text-[--color-on-surface]"
-                >
-                  {a}
-                </span>
-              ))}
-            </div>
-          </Section>
-
-          {/* 진화 체인 */}
-          {evolutionNames.length > 1 && (
-            <Section title="진화">
-              <div className="flex items-center justify-center gap-2 flex-wrap">
-                {evolutionNames.map((evo, i) => (
-                  <div key={evo.id} className="flex items-center gap-2">
-                    <div className="flex flex-col items-center gap-1">
-                      <div
-                        className="w-14 h-14 rounded-full flex items-center justify-center
-                                   bg-gray-100 dark:bg-gray-600 ring-1 ring-blue-200/50
-                                   shadow-[0_0_10px_rgba(147,197,253,0.4)]"
-                      >
-                        {evo.imageUrl && (
-                          <img
-                            src={evo.imageUrl}
-                            alt={evo.name}
-                            className="w-10 h-10 object-contain [image-rendering:pixelated]"
-                          />
-                        )}
-                      </div>
-                      <span className="text-[10px] font-galmuri text-[--color-on-surface]">
-                        {evo.name}
-                      </span>
-                    </div>
-                    {i < evolutionNames.length - 1 && (
-                      <span className="text-[--color-on-surface-muted] text-sm mb-5">→</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </Section>
-          )}
-        </div>
+    <div className="relative w-7 h-7 rounded-full overflow-hidden border-2 border-black shadow-sm shrink-0">
+      <div className="absolute top-0 left-0 w-full h-1/2 bg-red-500" />
+      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-white" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-1/3 h-1/3 bg-white border-2 border-black rounded-full" />
       </div>
     </div>
   );
 }
 
-interface InfoBoxProps {
-  label: string;
-  value: string;
-}
+export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps) {
+  const [bookmarks, setBookmarks] = useState<number[]>(() => getBookmarks());
+  const isBookmarked = bookmarks.includes(pokemon.id);
 
-function InfoBox({ label, value }: InfoBoxProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [16, -16]), {
+    stiffness: 250,
+    damping: 22,
+  });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-16, 16]), {
+    stiffness: 250,
+    damping: 22,
+  });
+  const shadowX = useTransform(mouseX, [-0.5, 0.5], [12, -12]);
+  const shadowY = useTransform(mouseY, [-0.5, 0.5], [12, -12]);
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+  }
+
+  function handleMouseLeave() {
+    mouseX.set(0);
+    mouseY.set(0);
+  }
+
+  const firstType = pokemon.types[0] ?? '노말';
+  const gradientClass = TYPE_CARD_GRADIENT[firstType] ?? 'from-gray-400 to-gray-500';
+
+  function handleBookmark(e: React.MouseEvent) {
+    e.stopPropagation();
+    setBookmarks(toggleBookmark(pokemon.id));
+  }
+
   return (
-    <div className="flex flex-col items-center gap-0.5 py-3 rounded-[--radius-md]
-                    bg-gray-100 dark:bg-gray-600 border border-[--color-border]">
-      <span className="text-xs font-galmuri text-[--color-on-surface-muted]">{label}</span>
-      <span className="text-sm font-galmuri font-semibold text-[--color-on-surface]">{value}</span>
-    </div>
-  );
-}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+      onClick={onClose}
+    >
+      {/* perspective wrapper */}
+      <div className="[perspective:1000px] w-full max-w-[360px] mx-4">
+        <motion.div
+          ref={cardRef}
+          initial={{ opacity: 0, scale: 0.85, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            rotateX,
+            rotateY,
+            transformStyle: 'preserve-3d',
+            boxShadow: useTransform(
+              [shadowX, shadowY],
+              ([x, y]) =>
+                `${x}px ${y}px 40px rgba(0,0,0,0.45), 0 20px 60px rgba(0,0,0,0.3)`
+            ),
+          }}
+          className={`cursor-default w-full aspect-[2/3] font-bold p-4 text-[#181a1a] rounded-2xl
+                     relative bg-linear-to-br ${gradientClass}
+                     border border-white/25`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* 상단: 포켓볼 + 번호 */}
+          <div className="flex items-center justify-between">
+            <PokeballIcon />
+            <p className="text-sm font-bold text-white bg-gray-800 px-4 py-1 rounded-lg shadow-lg font-galmuri">
+              No.
+              <span className="bg-linear-to-r from-yellow-200 via-yellow-400 to-yellow-600 bg-clip-text text-transparent drop-shadow-md">
+                {String(pokemon.id).padStart(3, '0')}
+              </span>
+            </p>
+          </div>
 
-interface SectionProps {
-  title: string;
-  children: React.ReactNode;
-}
+          {/* 포켓몬 이미지 */}
+          <div className="w-full mt-2 aspect-square flex justify-center items-center overflow-hidden">
+            <img
+              src={pokemon.imageUrl}
+              alt={pokemon.koreanName}
+              className="w-full h-full object-contain [image-rendering:pixelated] -mt-1.5"
+            />
+          </div>
 
-function Section({ title, children }: SectionProps) {
-  return (
-    <div className="mb-5">
-      <h3 className="font-galmuri text-xs font-semibold text-[--color-on-surface-muted] mb-2 uppercase tracking-wider">
-        {title}
-      </h3>
-      {children}
+          {/* 하단 정보 패널 (frosted glass) */}
+          <div
+            className="absolute left-1/2 -translate-x-1/2 bottom-4 w-[90%]
+                       bg-white/20 backdrop-blur-md rounded-xl p-3 shadow-md
+                       border border-yellow-400/70"
+          >
+            {/* 북마크 버튼 */}
+            <button
+              onClick={handleBookmark}
+              className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center cursor-pointer text-xl leading-none"
+              aria-label="북마크"
+            >
+              <span className={isBookmarked ? 'text-yellow-400' : 'text-white/80'}>
+                {isBookmarked ? '♥' : '♡'}
+              </span>
+            </button>
+
+            {/* 키 / 무게 */}
+            <div className="flex gap-4 mt-1 text-white text-sm font-galmuri">
+              <div className="flex items-center gap-1.5">
+                <span>키</span>
+                <span className="font-semibold">{pokemon.height.toFixed(1)}m</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span>무게</span>
+                <span className="font-semibold">{pokemon.weight.toFixed(1)}kg</span>
+              </div>
+            </div>
+
+            {/* 이름 */}
+            <p className="mt-1.5 text-white text-lg font-bold font-galmuri">
+              이름 : {pokemon.koreanName}
+            </p>
+
+            {/* 특성 */}
+            <div className="flex gap-1.5 flex-wrap mt-1.5 items-center">
+              <span className="text-white text-xs font-galmuri">특성 :</span>
+              {pokemon.abilities.map((a) => (
+                <span
+                  key={a}
+                  className="bg-yellow-500/30 px-2 py-0.5 rounded-md text-xs text-white font-galmuri"
+                >
+                  {a}
+                </span>
+              ))}
+            </div>
+
+            {/* 타입 */}
+            <div className="flex gap-1.5 flex-wrap mt-1.5 items-center">
+              <span className="text-white text-xs font-galmuri">타입 :</span>
+              {pokemon.types.map((t) => (
+                <TypeBadge key={t} type={t} gradient />
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }
