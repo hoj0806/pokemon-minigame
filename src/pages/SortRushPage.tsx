@@ -50,7 +50,7 @@ function ReferencePanel({ pokemons, side }: ReferencePanelProps) {
   return (
     <div
       className={clsx(
-        'flex flex-col items-center justify-center gap-3 h-full px-2',
+        'flex flex-col items-center justify-center gap-4 h-full px-2',
         side === 'left' ? 'border-r border-[--color-border]' : 'border-l border-[--color-border]',
       )}
     >
@@ -58,11 +58,11 @@ function ReferencePanel({ pokemons, side }: ReferencePanelProps) {
         {side === 'left' ? '← 왼쪽' : '오른쪽 →'}
       </p>
       {pokemons.map((p) => (
-        <div key={p.id} className="flex flex-col items-center gap-0.5">
+        <div key={p.id} className="flex flex-col items-center gap-1">
           <img
             src={p.imageUrl}
             alt={p.koreanName}
-            className="w-12 h-12 object-contain"
+            className="w-32 h-32 object-contain"
             loading="lazy"
           />
           <span className="font-galmuri text-xs text-[--color-on-surface] text-center leading-tight">
@@ -229,7 +229,7 @@ export default function SortRushPage() {
       {/* Game area */}
       <div className="flex-1 min-h-0 w-full max-w-2xl mx-auto flex">
         {/* Left panel */}
-        <div className="w-24 shrink-0">
+        <div className="w-44 shrink-0">
           <ReferencePanel pokemons={leftPokemons} side="left" />
         </div>
 
@@ -254,12 +254,10 @@ export default function SortRushPage() {
             )}
           </AnimatePresence>
 
-          <div className="flex-1 flex flex-col-reverse items-center justify-start gap-2 w-full pt-4 pb-2">
+          <div className="flex-1 flex flex-col-reverse items-center justify-between gap-0 w-full pb-2">
             <AnimatePresence mode="popLayout" custom={lastDirection} initial={false}>
               {queue.map((item, idx) => {
                 const isFront = idx === 0;
-                const scale = isFront ? 1 : Math.max(0.45, 0.85 - idx * 0.1);
-                const opacity = isFront ? 1 : Math.max(0.35, 0.85 - idx * 0.15);
                 return (
                   <motion.div
                     key={item.turnId}
@@ -267,25 +265,20 @@ export default function SortRushPage() {
                     custom={lastDirection}
                     variants={queueVariants}
                     initial="enter"
-                    animate={{ x: 0, y: 0, opacity, scale, rotate: 0 }}
+                    animate={{ x: 0, y: 0, opacity: 1, scale: 1, rotate: 0 }}
                     exit="exit"
                     transition={{ type: 'spring', stiffness: 280, damping: 24 }}
                     className={clsx(
-                      'flex flex-col items-center gap-1 rounded-[--radius-card] border-2 px-4 py-3',
-                      isFront
-                        ? 'border-[--color-brand] bg-[--color-surface-raised] shadow-[--shadow-card]'
-                        : 'border-[--color-border] bg-[--color-surface]',
+                      'flex items-center justify-center w-full overflow-visible',
+                      isFront ? 'h-28' : 'h-24',
                     )}
                   >
                     <img
                       src={item.pokemon.imageUrl}
                       alt={item.pokemon.koreanName}
-                      className="w-20 h-20 object-contain"
+                      className="w-24 h-24 object-contain shrink-0"
                       draggable={false}
                     />
-                    <span className="font-galmuri text-sm font-bold text-[--color-on-surface]">
-                      {item.pokemon.koreanName}
-                    </span>
                   </motion.div>
                 );
               })}
@@ -300,7 +293,7 @@ export default function SortRushPage() {
         </div>
 
         {/* Right panel */}
-        <div className="w-24 shrink-0">
+        <div className="w-44 shrink-0">
           <ReferencePanel pokemons={rightPokemons} side="right" />
         </div>
       </div>
