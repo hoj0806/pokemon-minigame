@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import GameSelectPage from "./pages/GameSelectPage";
 import MemoryMatchPage from "./pages/MemoryMatchPage";
 import SortRushPage from "./pages/SortRushPage";
+import PokemonMergePage from "./pages/PokemonMergePage";
 import PokedexPage from "./pages/PokedexPage";
 import PokedexDetailPage from "./pages/PokedexDetailPage";
 import HighScorePage from "./pages/HighScorePage";
@@ -18,6 +19,7 @@ export default function App() {
           <Route path='/game' element={<GameSelectPage />} />
           <Route path='/game/memory' element={<MemoryMatchPage />} />
           <Route path='/game/sortrush' element={<SortRushPage />} />
+          <Route path='/game/merge' element={<PokemonMergePage />} />
           <Route path='/pokedex' element={<PokedexPage />} />
           <Route path='/pokedex/:id' element={<PokedexDetailPage />} />
           <Route path='/highscore' element={<HighScorePage />} />
