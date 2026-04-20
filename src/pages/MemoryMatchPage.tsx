@@ -24,9 +24,9 @@ function isValidState(state: unknown): state is GameLocationState {
 }
 
 const GRID_CONFIG = {
-  easy:   { pairs: 6,  cols: 'grid-cols-3', rows: 'grid-rows-4', total: 12 },
-  normal: { pairs: 8,  cols: 'grid-cols-4', rows: 'grid-rows-4', total: 16 },
-  hard:   { pairs: 10, cols: 'grid-cols-4', rows: 'grid-rows-5', total: 20 },
+  easy:   { pairs: 6,  cols: 'grid-cols-3', total: 12 },
+  normal: { pairs: 8,  cols: 'grid-cols-4', total: 16 },
+  hard:   { pairs: 10, cols: 'grid-cols-4', total: 20 },
 } as const;
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = {
@@ -158,7 +158,7 @@ export default function MemoryMatchPage() {
       </div>
 
       {/* Card grid */}
-      <div className={clsx('flex-1 min-h-0 w-full max-w-2xl mx-auto grid gap-1.5', config.cols, config.rows)}>
+      <div className={clsx('flex-1 min-h-0 overflow-y-auto w-full max-w-sm mx-auto grid gap-2 content-center', config.cols)}>
         {cards.map((card, idx) => (
           <MemoryCard
             key={idx}

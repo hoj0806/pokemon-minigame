@@ -43,7 +43,7 @@ export function GameTimer({ timeLeft, maxTime = 60 }: GameTimerProps) {
           )}
           style={{ width: '100%' }}
           animate={{ scaleX: ratio }}
-          transition={{ duration: 0.4, ease: 'linear' }}
+          transition={{ duration: 1, ease: 'linear' }}
         />
 
         {/* Shimmer overlay */}
