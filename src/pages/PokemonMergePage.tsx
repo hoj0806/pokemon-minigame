@@ -178,7 +178,7 @@ export default function PokemonMergePage() {
       ref={containerRef}
       className="relative flex flex-col items-center min-h-[calc(100dvh-57px)] p-3 gap-3"
     >
-      <div className="w-full max-w-[480px] flex items-center justify-between px-1">
+      <div className="w-full max-w-[540px] flex items-center justify-between px-1">
         <div>
           <p className="font-galmuri text-xs text-[--color-on-surface-muted]">SCORE</p>
           <p className="font-galmuri text-3xl font-bold text-game-score tabular-nums">
@@ -204,7 +204,7 @@ export default function PokemonMergePage() {
         onPointerMove={handlePointerMove}
         onTouchMove={handleTouchMove}
         onClick={handleCanvasClick}
-        className="w-full max-w-[360px] aspect-[2/3] rounded-[--radius-card] bg-[--color-surface-raised] border border-[--color-border] shadow-[--shadow-card] touch-none cursor-pointer"
+        className="w-full max-w-[420px] aspect-[3/4] rounded-[--radius-card] bg-[--color-surface-raised] border border-[--color-border] shadow-[--shadow-card] touch-none cursor-pointer"
       />
 
       <div className="flex gap-2 items-center">

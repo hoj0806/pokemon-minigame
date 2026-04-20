@@ -61,8 +61,8 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-export const CANVAS_WIDTH = 360;
-export const CANVAS_HEIGHT = 540;
+export const CANVAS_WIDTH = 420;
+export const CANVAS_HEIGHT = 560;
 export const WALL_THICKNESS = 24;
 export const DROPPER_Y = 44;
 export const DEADLINE_Y = 92;
@@ -260,7 +260,6 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
     Matter.World.add(engine.world, [leftWall, rightWall, floor]);
 
     let ended = false;
-    let deadlineStart: number | null = null;
     let rafId = 0;
 
     const handleMerge = (a: Matter.Body, b: Matter.Body) => {
@@ -396,22 +395,12 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
         const data = getBodyData(body);
         if (!data) return false;
         if (now - data.spawnedAt < 1200) return false;
-        const topY = body.bounds.min.y;
-        const slow = Math.abs(body.velocity.y) < 1.4;
-        return topY < DEADLINE_Y && slow;
+        return body.bounds.min.y < DEADLINE_Y && Math.abs(body.velocity.y) < 1.4;
       });
 
-      if (!ended && phaseRef.current === 'playing') {
-        if (violator) {
-          if (deadlineStart === null) {
-            deadlineStart = now;
-          } else if (now - deadlineStart >= DEADLINE_GRACE_MS) {
-            ended = true;
-            dispatch({ type: 'END', score: scoreRef.current });
-          }
-        } else {
-          deadlineStart = null;
-        }
+      if (!ended && phaseRef.current === 'playing' && violator) {
+        ended = true;
+        dispatch({ type: 'END', score: scoreRef.current });
       }
 
       rafId = requestAnimationFrame(drawFrame);
