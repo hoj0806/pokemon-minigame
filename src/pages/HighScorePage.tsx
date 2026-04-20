@@ -23,22 +23,22 @@ const GAME_TABS: GameTab[] = [
     id: 'memory',
     label: '메모리 매치',
     hasDifficulty: true,
-    activeClass: 'bg-[--color-type-water] text-white shadow-md',
-    inactiveClass: 'bg-[--color-type-water]/20 border border-[--color-type-water]/50 text-[--color-type-water]',
+    activeClass: 'bg-blue-500 text-white shadow-md',
+    inactiveClass: 'bg-blue-100 border border-blue-300 text-blue-600 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-300',
   },
   {
     id: 'sortrush',
     label: '정렬 러시',
     hasDifficulty: true,
-    activeClass: 'bg-[--color-type-grass] text-white shadow-md',
-    inactiveClass: 'bg-[--color-type-grass]/20 border border-[--color-type-grass]/50 text-[--color-type-grass]',
+    activeClass: 'bg-green-500 text-white shadow-md',
+    inactiveClass: 'bg-green-100 border border-green-300 text-green-600 dark:bg-green-950 dark:border-green-700 dark:text-green-300',
   },
   {
     id: 'merge',
     label: '포켓몬 머지',
     hasDifficulty: false,
-    activeClass: 'bg-[--color-type-fire] text-white shadow-md',
-    inactiveClass: 'bg-[--color-type-fire]/20 border border-[--color-type-fire]/50 text-[--color-type-fire]',
+    activeClass: 'bg-orange-500 text-white shadow-md',
+    inactiveClass: 'bg-orange-100 border border-orange-300 text-orange-600 dark:bg-orange-950 dark:border-orange-700 dark:text-orange-300',
   },
 ];
 
@@ -46,20 +46,20 @@ const DIFFICULTIES: DifficultyOption[] = [
   {
     id: 'easy',
     label: '쉬움',
-    activeClass: 'bg-[--color-game-success] text-white font-semibold shadow-sm',
-    inactiveClass: 'bg-[--color-game-success]/20 border border-[--color-game-success]/50 text-[--color-game-success]',
+    activeClass: 'bg-green-500 text-white font-semibold shadow-sm',
+    inactiveClass: 'bg-green-100 border border-green-300 text-green-600 dark:bg-green-950 dark:border-green-700 dark:text-green-300',
   },
   {
     id: 'normal',
     label: '보통',
-    activeClass: 'bg-[--color-game-warning] text-white font-semibold shadow-sm',
-    inactiveClass: 'bg-[--color-game-warning]/20 border border-[--color-game-warning]/50 text-[--color-game-warning]',
+    activeClass: 'bg-yellow-400 text-white font-semibold shadow-sm',
+    inactiveClass: 'bg-yellow-100 border border-yellow-300 text-yellow-600 dark:bg-yellow-950 dark:border-yellow-700 dark:text-yellow-300',
   },
   {
     id: 'hard',
     label: '어려움',
-    activeClass: 'bg-[--color-game-error] text-white font-semibold shadow-sm',
-    inactiveClass: 'bg-[--color-game-error]/20 border border-[--color-game-error]/50 text-[--color-game-error]',
+    activeClass: 'bg-red-500 text-white font-semibold shadow-sm',
+    inactiveClass: 'bg-red-100 border border-red-300 text-red-600 dark:bg-red-950 dark:border-red-700 dark:text-red-300',
   },
 ];
 
