@@ -39,3 +39,24 @@ export const TYPE_COLOR: Record<string, string> = {
   강철: 'bg-gray-500',
   페어리: 'bg-pink-300',
 };
+
+export const TYPE_CARD_FROM: Record<string, string> = {
+  노말: 'from-gray-200',
+  불꽃: 'from-red-200',
+  물: 'from-blue-200',
+  전기: 'from-yellow-200',
+  풀: 'from-green-200',
+  얼음: 'from-cyan-100',
+  격투: 'from-red-300',
+  독: 'from-purple-200',
+  땅: 'from-yellow-300',
+  비행: 'from-indigo-200',
+  에스퍼: 'from-pink-200',
+  벌레: 'from-lime-200',
+  바위: 'from-amber-300',
+  고스트: 'from-purple-300',
+  드래곤: 'from-indigo-300',
+  악: 'from-gray-600',
+  강철: 'from-slate-300',
+  페어리: 'from-pink-200',
+};
