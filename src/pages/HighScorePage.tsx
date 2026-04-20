@@ -48,10 +48,10 @@ export default function HighScorePage() {
           <button
             key={id}
             onClick={() => setActiveGame(id)}
-            className={`font-galmuri px-5 py-2 rounded-[--radius-sm] text-sm font-semibold transition-colors ${
+            className={`font-galmuri px-5 py-2 rounded-[--radius-sm] text-sm font-semibold transition-colors cursor-pointer ${
               activeGame === id
-                ? 'bg-[--color-brand] text-white'
-                : 'border border-[--color-border] text-[--color-on-surface]'
+                ? 'bg-[--color-brand] text-white shadow-md'
+                : 'bg-[--color-surface-raised] border border-[--color-border] text-[--color-on-surface] hover:bg-[--color-surface-sunken]'
             }`}
           >
             {label}
@@ -65,10 +65,10 @@ export default function HighScorePage() {
             <button
               key={id}
               onClick={() => setActiveDifficulty(id)}
-              className={`font-galmuri px-4 py-1.5 rounded-[--radius-sm] text-sm transition-colors ${
+              className={`font-galmuri px-4 py-1.5 rounded-[--radius-sm] text-sm transition-colors cursor-pointer ${
                 activeDifficulty === id
-                  ? 'bg-[--color-accent] text-white font-semibold'
-                  : 'border border-[--color-border] text-[--color-on-surface-muted]'
+                  ? 'bg-[--color-accent] text-white font-semibold shadow-sm'
+                  : 'bg-[--color-surface-raised] border border-[--color-border] text-[--color-on-surface-muted] hover:bg-[--color-surface-sunken]'
               }`}
             >
               {label}
@@ -77,7 +77,7 @@ export default function HighScorePage() {
         </div>
       )}
 
-      <div className="w-full max-w-md rounded-[--radius-card] bg-[--color-surface-raised] border border-[--color-border] shadow-[--shadow-card] p-4">
+      <div className="w-full max-w-lg rounded-[--radius-card] bg-[--color-surface-raised] border border-[--color-border] shadow-[--shadow-card] p-6">
         <HighScoreTable entries={entries} />
       </div>
     </div>

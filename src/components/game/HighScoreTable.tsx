@@ -4,23 +4,25 @@ interface HighScoreTableProps {
   entries: HighScoreEntry[];
 }
 
+const MEDALS = ['🥇', '🥈', '🥉'];
+
 export function HighScoreTable({ entries }: HighScoreTableProps) {
   if (entries.length === 0) {
     return (
-      <p className="text-sm text-[--color-on-surface-muted] text-center py-4">
+      <p className="font-galmuri text-base text-[--color-on-surface-muted] text-center py-6">
         기록이 없습니다
       </p>
     );
   }
 
   return (
-    <table className="w-full text-sm text-[--color-on-surface]">
+    <table className="w-full font-galmuri text-base text-[--color-on-surface]">
       <thead>
-        <tr className="text-[--color-on-surface-muted] border-b border-[--color-border]">
-          <th className="py-2 text-left w-8">순위</th>
-          <th className="py-2 text-left">이름</th>
-          <th className="py-2 text-right">점수</th>
-          <th className="py-2 text-right">날짜</th>
+        <tr className="text-[--color-on-surface-muted] border-b-2 border-[--color-border]">
+          <th className="py-3 text-left w-12">순위</th>
+          <th className="py-3 text-left">이름</th>
+          <th className="py-3 text-right">점수</th>
+          <th className="py-3 text-right">날짜</th>
         </tr>
       </thead>
       <tbody>
@@ -29,12 +31,18 @@ export function HighScoreTable({ entries }: HighScoreTableProps) {
             key={`${entry.name}-${entry.playedAt}`}
             className="border-b border-[--color-border] last:border-0"
           >
-            <td className="py-2 font-semibold">{index + 1}</td>
-            <td className="py-2">{entry.name}</td>
-            <td className="py-2 text-right text-[--color-score] font-bold">
+            <td className="py-3 font-semibold text-lg">
+              {index < 3 ? (
+                <span>{MEDALS[index]}</span>
+              ) : (
+                <span className="text-[--color-on-surface-muted]">{index + 1}</span>
+              )}
+            </td>
+            <td className="py-3 text-base">{entry.name}</td>
+            <td className="py-3 text-right text-[--color-score] font-bold text-lg">
               {entry.score.toLocaleString()}
             </td>
-            <td className="py-2 text-right text-[--color-on-surface-muted]">
+            <td className="py-3 text-right text-[--color-on-surface-muted] text-sm">
               {formatDate(entry.playedAt)}
             </td>
           </tr>
