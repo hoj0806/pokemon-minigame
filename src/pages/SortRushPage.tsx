@@ -162,7 +162,7 @@ export default function SortRushPage() {
           </span>
         </div>
 
-        <div className="w-full max-w-sm rounded-[--radius-card] bg-[--color-surface-overlay] border-2 border-[#111827] shadow-[0_6px_0_0_#111827] p-4">
+        <div className="w-full max-w-sm rounded-[--radius-card] bg-[#BFDBFE] border-2 border-[#111827] shadow-[0_6px_0_0_#111827] p-4">
           <p className="font-galmuri text-sm font-bold text-[--color-on-surface] mb-3">하이스코어</p>
           {scoresSaved ? (
             <HighScoreTable entries={getHighScores(highScoreKey)} />

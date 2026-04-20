@@ -19,9 +19,9 @@ export function NameInputModal({ onSubmit, onClose }: NameInputModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="rounded-[--radius-card] bg-[--color-surface-overlay] border-2 border-[#111827] shadow-[0_8px_0_0_#111827] w-80 flex flex-col overflow-hidden">
+      <div className="rounded-[--radius-card] bg-[#FFCB05] border-2 border-[#111827] shadow-[0_8px_0_0_#111827] w-80 flex flex-col overflow-hidden">
         <div className="bg-[--color-brand] px-6 py-4">
-          <h2 className="font-galmuri text-xl font-bold text-[--color-accent]">이름 입력</h2>
+          <h2 className="font-galmuri text-xl font-bold text-[#FFCB05]">이름 입력</h2>
           <p className="font-galmuri text-xs text-white/80 mt-0.5">TOP 5 진입을 축하합니다!</p>
         </div>
         <div className="flex flex-col gap-4 p-6">
@@ -32,19 +32,19 @@ export function NameInputModal({ onSubmit, onClose }: NameInputModalProps) {
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="최대 8자 (빈 칸이면 익명)"
-            className="bg-[--color-surface] border-2 border-[#111827] rounded-[--radius-sm] px-3 py-2 text-sm font-galmuri text-[--color-on-surface] placeholder:text-[--color-on-surface-muted] focus:outline-none focus:ring-2 focus:ring-[--color-brand]"
+            className="bg-white border-2 border-[#111827] rounded-[--radius-sm] px-3 py-2 text-sm font-galmuri text-[#111827] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[--color-brand]"
             autoFocus
           />
           <div className="flex gap-2 justify-end">
             <button
               onClick={onClose}
-              className="font-galmuri bg-[--color-surface] text-[--color-on-surface] font-semibold px-4 py-2 rounded-[--radius-sm] text-sm border-2 border-[#111827] shadow-[0_3px_0_0_#111827] active:shadow-[0_1px_0_0_#111827] active:translate-y-[2px] transition-all duration-75 cursor-pointer"
+              className="font-galmuri bg-white text-[#111827] font-bold px-4 py-2 rounded-[--radius-sm] text-sm border-2 border-[#111827] shadow-[0_3px_0_0_#111827] active:shadow-[0_1px_0_0_#111827] active:translate-y-[2px] transition-all duration-75 cursor-pointer"
             >
               취소
             </button>
             <button
               onClick={handleSubmit}
-              className="font-galmuri bg-[--color-brand] text-[--color-accent] font-bold px-4 py-2 rounded-[--radius-sm] text-sm border-2 border-[#111827] shadow-[0_3px_0_0_#111827] active:shadow-[0_1px_0_0_#111827] active:translate-y-[2px] transition-all duration-75 cursor-pointer"
+              className="font-galmuri bg-[--color-brand] text-[#FFCB05] font-bold px-4 py-2 rounded-[--radius-sm] text-sm border-2 border-[#111827] shadow-[0_3px_0_0_#111827] active:shadow-[0_1px_0_0_#111827] active:translate-y-[2px] transition-all duration-75 cursor-pointer"
             >
               등록
             </button>
