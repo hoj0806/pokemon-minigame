@@ -21,6 +21,11 @@ export function isTop5(key: string, score: number): boolean {
   return score > lowest;
 }
 
+export function getRank(key: string, score: number): number {
+  const entries = getHighScores(key);
+  return entries.filter((e) => e.score > score).length + 1;
+}
+
 export function addHighScore(key: string, entry: HighScoreEntry): void {
   const entries = getHighScores(key);
   const next = [...entries, entry]
