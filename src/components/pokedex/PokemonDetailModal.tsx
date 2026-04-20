@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { TypeBadge } from './TypeBadge';
 import { TYPE_CARD_GRADIENT } from '../../utils/pokemonLocale';
 import { getBookmarks, toggleBookmark } from '../../utils/bookmark';
@@ -8,6 +9,7 @@ import type { PokemonDex } from '../../types/pokemon';
 interface PokemonDetailModalProps {
   pokemon: PokemonDex;
   onClose: () => void;
+  onBookmarkChange: (ids: number[]) => void;
 }
 
 function PokeballIcon() {
@@ -22,7 +24,7 @@ function PokeballIcon() {
   );
 }
 
-export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps) {
+export function PokemonDetailModal({ pokemon, onClose, onBookmarkChange }: PokemonDetailModalProps) {
   const [bookmarks, setBookmarks] = useState<number[]>(() => getBookmarks());
   const isBookmarked = bookmarks.includes(pokemon.id);
 
@@ -58,7 +60,9 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
 
   function handleBookmark(e: React.MouseEvent) {
     e.stopPropagation();
-    setBookmarks(toggleBookmark(pokemon.id));
+    const updated = toggleBookmark(pokemon.id);
+    setBookmarks(updated);
+    onBookmarkChange(updated);
   }
 
   return (
@@ -116,15 +120,17 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
                        bg-white/20 backdrop-blur-md rounded-xl p-3 shadow-md
                        border border-yellow-400/70"
           >
-            {/* 북마크 버튼 */}
+            {/* 즐겨찾기 버튼 */}
             <button
               onClick={handleBookmark}
-              className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center cursor-pointer text-xl leading-none"
-              aria-label="북마크"
+              className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center cursor-pointer text-xl"
+              aria-label="즐겨찾기"
             >
-              <span className={isBookmarked ? 'text-yellow-400' : 'text-white/80'}>
-                {isBookmarked ? '♥' : '♡'}
-              </span>
+              {isBookmarked ? (
+                <FaHeart className="text-pink-400 drop-shadow-sm" />
+              ) : (
+                <FaRegHeart className="text-white/80" />
+              )}
             </button>
 
             {/* 키 / 무게 */}

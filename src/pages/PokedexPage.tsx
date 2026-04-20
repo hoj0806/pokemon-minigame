@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { FaCaretUp, FaCaretDown, FaHeart, FaRegHeart } from 'react-icons/fa';
 import { usePokedexStore } from '../store/pokedexStore';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorView } from '../components/common/ErrorView';
 import { PokemonOrb } from '../components/pokedex/PokemonOrb';
 import { PokemonDetailModal } from '../components/pokedex/PokemonDetailModal';
-import { getBookmarks, toggleBookmark } from '../utils/bookmark';
+import { getBookmarks } from '../utils/bookmark';
 import type { PokemonDex } from '../types/pokemon';
 
 type SortKey = 'id' | 'name' | 'type';
@@ -25,6 +26,10 @@ const SORT_BUTTONS: { key: SortKey; label: string }[] = [
   { key: 'id', label: '도감순' },
   { key: 'type', label: '타입순' },
 ];
+
+const btnBase = 'flex-1 flex items-center justify-center gap-1 font-galmuri text-xs py-3 rounded-lg border-b-2 border-[#111827] transition-all duration-75 cursor-pointer';
+const btnActive = 'bg-[#FFCB05] text-[#111827] font-bold shadow-[0_4px_0_0_#111827] active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]';
+const btnInactive = 'bg-[#c8bfaf] text-[#111827] shadow-[0_4px_0_0_#111827] hover:bg-[#b8ae9e] active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]';
 
 export default function PokedexPage() {
   const { data, isLoading, error, loadGen1 } = usePokedexStore();
@@ -49,10 +54,6 @@ export default function PokedexPage() {
     setBookmarkOnly(false);
   }
 
-  function handleBookmarkToggle(id: number) {
-    setBookmarks(toggleBookmark(id));
-  }
-
   const base = bookmarkOnly ? data.filter((p) => bookmarks.includes(p.id)) : data;
   const displayed = sortPokemon(base, sortKey, order);
 
@@ -60,65 +61,52 @@ export default function PokedexPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-57px)] bg-[--color-surface] p-6">
       <div
         className="w-full max-w-4xl max-h-[80vh] flex flex-col
-                   rounded-[--radius-card]
+                   rounded-card overflow-hidden
                    bg-[#1a1a2e]
-                   border-4 border-[#111827]
-                   shadow-[0_8px_0_0_#111827,0_12px_40px_rgba(0,0,0,0.4)]"
+                   shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
       >
         {/* 헤더 */}
-        <div className="px-6 py-4 border-b-4 border-[#111827] shrink-0 bg-[#EE1515] rounded-t-[calc(var(--radius-card)-4px)]">
+        <div className="px-6 py-4 shrink-0 bg-[#EE1515]">
           <h1 className="font-galmuri text-xl font-bold text-white drop-shadow-sm">
             📖 포켓몬 도감
           </h1>
           <p className="text-xs text-red-100 mt-0.5 font-galmuri">1세대 151마리</p>
 
-          <div className="flex gap-2 mt-3 flex-wrap">
+          <div className="flex gap-2 mt-3">
             {SORT_BUTTONS.map(({ key, label }) => {
               const isActive = sortKey === key;
-              const arrow = order === 'asc' ? '▲' : '▼';
               return (
                 <button
                   key={key}
                   onClick={() => handleSort(key)}
-                  className={`font-galmuri text-xs px-4 py-2 rounded-[--radius-sm] border-2 border-[#111827] transition-all duration-75 cursor-pointer ${
-                    isActive
-                      ? 'bg-[#FFCB05] text-[#111827] font-bold shadow-[0_4px_0_0_#111827] active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]'
-                      : 'bg-white text-[#111827] shadow-[0_4px_0_0_#111827] hover:bg-gray-100 active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]'
-                  }`}
+                  className={`${btnBase} ${isActive ? btnActive : btnInactive}`}
                 >
                   {label}
-                  {isActive && <span className="ml-1">{arrow}</span>}
+                  {isActive && (order === 'asc' ? <FaCaretUp /> : <FaCaretDown />)}
                 </button>
               );
             })}
 
             <button
               onClick={handleReset}
-              className="font-galmuri text-xs px-4 py-2 rounded-[--radius-sm] border-2 border-[#111827]
-                         bg-white text-[#111827]
-                         shadow-[0_4px_0_0_#111827] hover:bg-red-50
-                         active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]
-                         transition-all duration-75 cursor-pointer"
+              className={`${btnBase} ${btnInactive}`}
             >
               리셋
             </button>
 
             <button
               onClick={() => setBookmarkOnly((prev) => !prev)}
-              className={`font-galmuri text-xs px-4 py-2 rounded-[--radius-sm] border-2 border-[#111827] transition-all duration-75 cursor-pointer ${
-                bookmarkOnly
-                  ? 'bg-yellow-400 text-[#111827] font-bold shadow-[0_4px_0_0_#111827] active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]'
-                  : 'bg-white text-[#111827] shadow-[0_4px_0_0_#111827] hover:bg-yellow-50 active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]'
-              }`}
+              className={`${btnBase} ${bookmarkOnly ? btnActive : btnInactive}`}
             >
-              {bookmarkOnly ? '★ 북마크' : '☆ 북마크'}
+              {bookmarkOnly ? <FaHeart className="mr-0.5" /> : <FaRegHeart className="mr-0.5" />}
+              북마크
             </button>
           </div>
         </div>
 
         {/* 스크롤 영역 */}
         <div
-          className="overflow-y-auto p-6 bg-[#e8e0d0] rounded-b-[calc(var(--radius-card)-4px)]
+          className="overflow-y-auto flex-1 p-6 bg-[#e8e0d0]
                      [&::-webkit-scrollbar]:w-2
                      [&::-webkit-scrollbar-track]:bg-[#c8bfaf]
                      [&::-webkit-scrollbar-track]:rounded-full
@@ -130,14 +118,12 @@ export default function PokedexPage() {
           {isLoading && <LoadingSpinner />}
           {error && <ErrorView message={error.message} onRetry={loadGen1} />}
           {!isLoading && !error && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
               {displayed.map((pokemon) => (
                 <PokemonOrb
                   key={pokemon.id}
                   pokemon={pokemon}
-                  isBookmarked={bookmarks.includes(pokemon.id)}
                   onSelect={setSelected}
-                  onBookmark={handleBookmarkToggle}
                 />
               ))}
             </div>
@@ -146,7 +132,11 @@ export default function PokedexPage() {
       </div>
 
       {selected && (
-        <PokemonDetailModal pokemon={selected} onClose={() => setSelected(null)} />
+        <PokemonDetailModal
+          pokemon={selected}
+          onClose={() => setSelected(null)}
+          onBookmarkChange={setBookmarks}
+        />
       )}
     </div>
   );
