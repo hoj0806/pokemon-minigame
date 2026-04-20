@@ -9,7 +9,7 @@ import { HighScoreTable } from '../components/game/HighScoreTable';
 import { NameInputModal } from '../components/game/NameInputModal';
 import { usePokedexStore } from '../store/pokedexStore';
 import { useSortRushGame } from '../hooks/useSortRushGame';
-import { getHighScores, isTop5, addHighScore } from '../utils/highScore';
+import { getHighScores, isTop5, addHighScore, getRank } from '../utils/highScore';
 
 interface GameLocationState {
   difficulty: Difficulty;
@@ -145,7 +145,7 @@ export default function SortRushPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-57px)] gap-6 p-6">
         {showNameModal && (
-          <NameInputModal onSubmit={handleNameSubmit} onClose={handleModalClose} />
+          <NameInputModal rank={getRank(highScoreKey, finalScore)} onSubmit={handleNameSubmit} onClose={handleModalClose} />
         )}
 
         <div className="text-center">

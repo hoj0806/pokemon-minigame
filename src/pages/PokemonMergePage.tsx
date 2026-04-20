@@ -6,7 +6,7 @@ import { HighScoreTable } from '../components/game/HighScoreTable';
 import { NameInputModal } from '../components/game/NameInputModal';
 import { NextPreview } from '../components/merge/NextPreview';
 import { MERGE_CHAIN } from '../utils/mergeChain';
-import { getHighScores, isTop5, addHighScore } from '../utils/highScore';
+import { getHighScores, isTop5, addHighScore, getRank } from '../utils/highScore';
 import type { PokemonDex } from '../types/pokemon';
 
 const HIGH_SCORE_KEY = 'highScore:merge';
@@ -88,7 +88,7 @@ export default function PokemonMergePage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-57px)] gap-6 p-6">
         {showNameModal && (
-          <NameInputModal onSubmit={handleNameSubmit} onClose={handleModalClose} />
+          <NameInputModal rank={getRank(HIGH_SCORE_KEY, finalScore)} onSubmit={handleNameSubmit} onClose={handleModalClose} />
         )}
 
         <div className="text-center">
