@@ -24,9 +24,9 @@ function isValidState(state: unknown): state is GameLocationState {
 }
 
 const GRID_CONFIG = {
-  easy:   { pairs: 6,  cols: 'grid-cols-3', total: 12 },
-  normal: { pairs: 8,  cols: 'grid-cols-4', total: 16 },
-  hard:   { pairs: 10, cols: 'grid-cols-4', total: 20 },
+  easy:   { cols: 'grid-cols-4', maxW: 'max-w-[581px]', nameSize: 'text-sm' },
+  normal: { cols: 'grid-cols-5', maxW: 'max-w-[622px]', nameSize: 'text-xs' },
+  hard:   { cols: 'grid-cols-7', maxW: 'max-w-[876px]', nameSize: 'text-[10px]' },
 } as const;
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = {
@@ -44,6 +44,7 @@ export default function MemoryMatchPage() {
   const validState = isValidState(rawState) ? rawState : null;
   const difficulty = validState?.difficulty ?? 'easy';
   const config = GRID_CONFIG[difficulty];
+  const { cols, maxW, nameSize } = config;
   const highScoreKey = `highScore:memory:${difficulty}`;
 
   // true = name submitted or modal dismissed (no more modal this result cycle)
@@ -158,13 +159,14 @@ export default function MemoryMatchPage() {
       </div>
 
       {/* Card grid */}
-      <div className={clsx('flex-1 min-h-0 overflow-y-auto w-full max-w-sm mx-auto grid gap-2 content-center', config.cols)}>
+      <div className={clsx('flex-1 min-h-0 overflow-y-auto w-full mx-auto grid gap-2 content-center', cols, maxW)}>
         {cards.map((card, idx) => (
           <MemoryCard
             key={idx}
             pokemon={card.pokemon}
             isFlipped={card.isFlipped}
             isMatched={card.isMatched}
+            nameSize={nameSize}
             onClick={() => handleCardClick(idx)}
           />
         ))}

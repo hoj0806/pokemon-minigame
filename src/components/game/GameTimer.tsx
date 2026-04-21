@@ -30,7 +30,7 @@ export function GameTimer({ timeLeft, maxTime = 60 }: GameTimerProps) {
       </div>
 
       {/* Track */}
-      <div className="relative h-5 w-full rounded-full bg-[--color-border] overflow-hidden shadow-inner">
+      <div className="relative h-3 w-full rounded-full bg-[--color-border] overflow-hidden shadow-inner">
         {/* Fill bar */}
         <motion.div
           className={clsx(
