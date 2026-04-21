@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, type Variants } from 'motion/react';
 import clsx from 'clsx';
@@ -85,6 +85,11 @@ export default function SortRushPage() {
   const highScoreKey = `highScore:sortrush:${difficulty}`;
 
   const [nameSaved, setNameSaved] = useState(false);
+  const [activePopup, setActivePopup] = useState<{ id: number; outcome: 'correct' | 'wrong' } | null>(null);
+  const [shakingHeart, setShakingHeart] = useState(false);
+  const [milestoneCombo, setMilestoneCombo] = useState<number | null>(null);
+  const prevLivesRef = useRef(3);
+  const milestoneHideRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     phase,
@@ -106,6 +111,42 @@ export default function SortRushPage() {
   useEffect(() => {
     if (!validState) navigate('/game', { replace: true });
   }, [validState, navigate]);
+
+  useEffect(() => {
+    if (lastOutcome === null) return;
+    const captured = { id: lastEventId, outcome: lastOutcome };
+    const showT = setTimeout(() => setActivePopup(captured), 0);
+    const hideT = setTimeout(() => setActivePopup(null), 700);
+    return () => {
+      clearTimeout(showT);
+      clearTimeout(hideT);
+    };
+  }, [lastEventId, lastOutcome]);
+
+  useEffect(() => {
+    if (combo > 0 && combo % 10 === 0) {
+      const captured = combo;
+      if (milestoneHideRef.current) clearTimeout(milestoneHideRef.current);
+      const showT = setTimeout(() => {
+        setMilestoneCombo(captured);
+        milestoneHideRef.current = setTimeout(() => setMilestoneCombo(null), 1000);
+      }, 0);
+      return () => clearTimeout(showT);
+    }
+  }, [combo]);
+
+  useEffect(() => {
+    if (lives < prevLivesRef.current) {
+      prevLivesRef.current = lives;
+      const showT = setTimeout(() => setShakingHeart(true), 0);
+      const hideT = setTimeout(() => setShakingHeart(false), 450);
+      return () => {
+        clearTimeout(showT);
+        clearTimeout(hideT);
+      };
+    }
+    prevLivesRef.current = lives;
+  }, [lives]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -199,21 +240,50 @@ export default function SortRushPage() {
           <div className="flex gap-6">
             <div>
               <p className="font-galmuri text-xs text-[--color-on-surface-muted]">SCORE</p>
-              <p className="font-galmuri text-3xl font-bold text-game-score tabular-nums">
+              <motion.p
+                key={score}
+                initial={{ scale: 1.25, opacity: 0.6 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                className="font-galmuri text-3xl font-bold text-game-score tabular-nums"
+              >
                 {score.toLocaleString()}
-              </p>
+              </motion.p>
             </div>
             <div>
               <p className="font-galmuri text-xs text-[--color-on-surface-muted]">COMBO</p>
-              <p className="font-galmuri text-3xl font-bold text-game-combo tabular-nums">
+              <motion.p
+                key={combo}
+                initial={{
+                  scale: combo > 0 && combo % 10 === 0 ? 3 : combo > 0 ? 1.6 : 0.8,
+                  opacity: 0,
+                  rotate: combo > 0 && combo % 10 === 0 ? -12 : 0,
+                }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                transition={
+                  combo > 0 && combo % 10 === 0
+                    ? { type: 'spring', stiffness: 220, damping: 9 }
+                    : { type: 'spring', stiffness: 500, damping: 18 }
+                }
+                className={clsx(
+                  'font-galmuri text-3xl font-bold tabular-nums',
+                  combo > 0 && combo % 10 === 0
+                    ? 'text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]'
+                    : 'text-game-combo',
+                )}
+              >
                 ×{combo}
-              </p>
+              </motion.p>
             </div>
             <div>
               <p className="font-galmuri text-xs text-[--color-on-surface-muted]">LIFE</p>
-              <p className="font-galmuri text-2xl text-game-error tabular-nums">
+              <motion.p
+                animate={shakingHeart ? { x: [-6, 6, -5, 5, -3, 3, 0] } : { x: 0 }}
+                transition={{ duration: 0.35 }}
+                className="font-galmuri text-2xl text-game-error tabular-nums"
+              >
                 {Array.from({ length: 3 }, (_, i) => (i < lives ? '♥' : '♡')).join('')}
-              </p>
+              </motion.p>
             </div>
           </div>
           <button
@@ -235,21 +305,39 @@ export default function SortRushPage() {
 
         {/* Center queue */}
         <div className="flex-1 flex flex-col items-center justify-end gap-4 px-4 relative overflow-hidden">
+          {/* Milestone combo overlay */}
+          <AnimatePresence>
+            {milestoneCombo && (
+              <motion.div
+                key={milestoneCombo}
+                initial={{ scale: 0.4, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 1.3, opacity: 0, y: -20 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 12 }}
+                className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
+              >
+                <p className="font-galmuri text-5xl font-bold text-yellow-400 drop-shadow-[0_0_16px_rgba(250,204,21,0.95)] drop-shadow-[0_2px_0_#000]">
+                  {milestoneCombo} COMBO!!
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Floating feedback popup */}
           <AnimatePresence>
-            {lastOutcome && (
+            {activePopup && (
               <motion.div
-                key={lastEventId}
-                initial={{ y: 0, opacity: 0, scale: 0.8 }}
-                animate={{ y: -30, opacity: 1, scale: 1 }}
-                exit={{ y: -60, opacity: 0 }}
-                transition={{ duration: 0.5 }}
+                key={activePopup.id}
+                initial={{ y: 0, opacity: 0, scale: 0.7 }}
+                animate={{ y: -24, opacity: 1, scale: 1.1 }}
+                exit={{ y: -56, opacity: 0, scale: 0.85 }}
+                transition={{ duration: 0.18, exit: { duration: 0.3 } }}
                 className={clsx(
-                  'absolute top-4 font-galmuri text-lg font-bold pointer-events-none z-10',
-                  lastOutcome === 'correct' ? 'text-game-success' : 'text-game-error',
+                  'absolute top-10 font-galmuri text-xl font-bold pointer-events-none z-10',
+                  activePopup.outcome === 'correct' ? 'text-game-success' : 'text-game-error',
                 )}
               >
-                {lastOutcome === 'correct' ? '정답!' : '−1 ♥'}
+                {activePopup.outcome === 'correct' ? '정답!' : '−1 ♥'}
               </motion.div>
             )}
           </AnimatePresence>
