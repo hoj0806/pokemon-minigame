@@ -45,9 +45,9 @@ const GAMES: GameInfo[] = [
 ];
 
 const DIFFICULTY_COLOR: Record<Difficulty, string> = {
-  easy: 'border-game-success text-game-success',
-  normal: 'border-game-warning text-game-warning',
-  hard: 'border-game-error text-game-error',
+  easy: 'border-game-success text-white bg-game-success hover:brightness-110',
+  normal: 'border-game-warning text-white bg-game-warning hover:brightness-110',
+  hard: 'border-game-error text-white bg-game-error hover:brightness-110',
 };
 
 export default function GameSelectPage() {
@@ -85,7 +85,7 @@ export default function GameSelectPage() {
             <button
               key={id}
               onClick={() => handleDifficultySelect(id)}
-              className={`rounded-[--radius-card] border-2 bg-[--color-surface-raised] shadow-[--shadow-card] px-6 py-5 text-left cursor-pointer hover:shadow-[--shadow-elevated] transition-shadow ${DIFFICULTY_COLOR[id]}`}
+              className={`rounded-[--radius-card] border-2 bg-[--color-surface-raised] shadow-[--shadow-card] px-6 py-5 text-left cursor-pointer hover:shadow-[--shadow-elevated] hover:-translate-y-1 hover:scale-[1.02] active:translate-y-0 active:scale-100 transition-all duration-150 ${DIFFICULTY_COLOR[id]}`}
             >
               <span className="font-galmuri text-xl font-bold">{label}</span>
               <span className="font-galmuri text-sm text-[--color-on-surface-muted] ml-3">
@@ -97,7 +97,7 @@ export default function GameSelectPage() {
 
         <button
           onClick={() => setStep('select')}
-          className="text-sm text-[--color-on-surface-muted] hover:text-[--color-on-surface] transition-colors"
+          className="font-galmuri text-sm text-[--color-on-surface] border-2 border-[--color-border] px-5 py-2.5 rounded-md shadow-[3px_3px_0_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,0.3)] hover:-translate-y-0.5 hover:border-[--color-border-strong] active:shadow-none active:translate-y-0 transition-all duration-150 cursor-pointer"
         >
           ← 게임 선택으로 돌아가기
         </button>
@@ -107,22 +107,30 @@ export default function GameSelectPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-57px)] gap-8 p-6">
-      <h1 className="font-galmuri text-2xl font-bold text-[--color-on-surface]">게임 선택</h1>
+      <div className="flex items-center gap-4">
+        <h1 className="font-galmuri text-2xl font-bold text-[--color-on-surface]">게임 선택</h1>
+        <button
+          onClick={() => navigate('/')}
+          className="font-galmuri text-sm text-[--color-on-surface] border-2 border-[--color-border] px-3 py-1.5 rounded-md shadow-[3px_3px_0_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,0.3)] hover:-translate-y-0.5 hover:border-[--color-border-strong] active:shadow-none active:translate-y-0 transition-all duration-150 cursor-pointer"
+        >
+          ← 홈
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
         {GAMES.map((game) => (
           <button
             key={game.id}
             onClick={() => handleGameSelect(game)}
-            className="rounded-[--radius-card] bg-[--color-surface-raised] border border-[--color-border] shadow-[--shadow-card] p-8 text-left cursor-pointer hover:shadow-[--shadow-elevated] transition-shadow"
+            className="group rounded-[--radius-card] bg-[--color-surface-raised] border border-[--color-border] shadow-[--shadow-card] p-8 text-left cursor-pointer hover:shadow-[--shadow-elevated] hover:-translate-y-1 hover:scale-[1.02] hover:bg-[--color-brand] active:translate-y-0 active:scale-100 transition-all duration-150"
           >
-            <h2 className="font-galmuri text-xl font-bold text-[--color-on-surface] mb-1">
+            <h2 className="font-galmuri text-xl font-bold text-[--color-on-surface] group-hover:text-white mb-1 transition-colors duration-150">
               {game.title}
             </h2>
-            <p className="text-sm text-[--color-on-surface-muted] mb-4">{game.description}</p>
+            <p className="text-sm text-[--color-on-surface-muted] group-hover:text-red-100 mb-4 transition-colors duration-150">{game.description}</p>
             <ul className="flex flex-col gap-1">
               {game.rules.map((rule) => (
-                <li key={rule} className="text-xs text-[--color-on-surface-muted] flex gap-1.5">
+                <li key={rule} className="text-xs text-[--color-on-surface-muted] group-hover:text-red-100 flex gap-1.5 transition-colors duration-150">
                   <span>·</span>
                   <span>{rule}</span>
                 </li>
