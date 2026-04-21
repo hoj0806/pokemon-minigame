@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import clsx from 'clsx';
 import type { Difficulty } from '../types/game';
 import { GameTimer } from '../components/game/GameTimer';
@@ -47,8 +48,9 @@ export default function MemoryMatchPage() {
   const { cols, maxW, nameSize } = config;
   const highScoreKey = `highScore:memory:${difficulty}`;
 
-  // true = name submitted or modal dismissed (no more modal this result cycle)
   const [nameSaved, setNameSaved] = useState(false);
+  const [milestoneCombo, setMilestoneCombo] = useState<number | null>(null);
+  const milestoneHideRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { cards, phase, timeLeft, score, combo, finalScore, handleCardClick, restart } =
     useMemoryGame(difficulty, pokemons);
@@ -56,6 +58,18 @@ export default function MemoryMatchPage() {
   useEffect(() => {
     if (!validState) navigate('/game', { replace: true });
   }, [validState, navigate]);
+
+  useEffect(() => {
+    if (combo > 0 && combo % 10 === 0) {
+      const captured = combo;
+      if (milestoneHideRef.current) clearTimeout(milestoneHideRef.current);
+      const showT = setTimeout(() => {
+        setMilestoneCombo(captured);
+        milestoneHideRef.current = setTimeout(() => setMilestoneCombo(null), 1000);
+      }, 0);
+      return () => clearTimeout(showT);
+    }
+  }, [combo]);
 
   if (!validState) return null;
 
@@ -139,13 +153,40 @@ export default function MemoryMatchPage() {
           <div className="flex gap-6">
             <div>
               <p className="font-galmuri text-xs text-[--color-on-surface-muted]">SCORE</p>
-              <p className="font-galmuri text-3xl font-bold text-game-score tabular-nums">
+              <motion.p
+                key={score}
+                initial={{ scale: 1.25, opacity: 0.6 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                className="font-galmuri text-3xl font-bold text-game-score tabular-nums"
+              >
                 {score.toLocaleString()}
-              </p>
+              </motion.p>
             </div>
             <div>
               <p className="font-galmuri text-xs text-[--color-on-surface-muted]">COMBO</p>
-              <p className="font-galmuri text-3xl font-bold text-game-combo tabular-nums">×{combo}</p>
+              <motion.p
+                key={combo}
+                initial={{
+                  scale: combo > 0 && combo % 10 === 0 ? 3 : combo > 0 ? 1.6 : 0.8,
+                  opacity: 0,
+                  rotate: combo > 0 && combo % 10 === 0 ? -12 : 0,
+                }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                transition={
+                  combo > 0 && combo % 10 === 0
+                    ? { type: 'spring', stiffness: 220, damping: 9 }
+                    : { type: 'spring', stiffness: 500, damping: 18 }
+                }
+                className={clsx(
+                  'font-galmuri text-3xl font-bold tabular-nums',
+                  combo > 0 && combo % 10 === 0
+                    ? 'text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]'
+                    : 'text-game-combo',
+                )}
+              >
+                ×{combo}
+              </motion.p>
             </div>
           </div>
           <button
@@ -157,6 +198,24 @@ export default function MemoryMatchPage() {
         </div>
         <GameTimer timeLeft={timeLeft} maxTime={60} />
       </div>
+
+      {/* Milestone combo overlay */}
+      <AnimatePresence>
+        {milestoneCombo && (
+          <motion.div
+            key={milestoneCombo}
+            initial={{ scale: 0.4, opacity: 0, y: 30 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 1.3, opacity: 0, y: -20 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 12 }}
+            className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
+          >
+            <p className="font-galmuri text-5xl font-bold text-yellow-400 drop-shadow-[0_0_16px_rgba(250,204,21,0.95)] drop-shadow-[0_2px_0_#000]">
+              {milestoneCombo} COMBO!!
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Card grid */}
       <div className={clsx('flex-1 min-h-0 overflow-y-auto w-full mx-auto grid gap-2 content-center', cols, maxW)}>

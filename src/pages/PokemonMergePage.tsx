@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'motion/react';
 import { usePokedexStore } from '../store/pokedexStore';
 import { useMergeGame, CANVAS_WIDTH, CANVAS_HEIGHT } from '../hooks/useMergeGame';
 import { HighScoreTable } from '../components/game/HighScoreTable';
@@ -181,9 +182,15 @@ export default function PokemonMergePage() {
       <div className="w-full max-w-[540px] flex items-center justify-between px-1">
         <div>
           <p className="font-galmuri text-xs text-[--color-on-surface-muted]">SCORE</p>
-          <p className="font-galmuri text-3xl font-bold text-game-score tabular-nums">
+          <motion.p
+            key={score}
+            initial={{ scale: 1.25, opacity: 0.6 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+            className="font-galmuri text-3xl font-bold text-game-score tabular-nums"
+          >
             {score.toLocaleString()}
-          </p>
+          </motion.p>
         </div>
         <div className="flex gap-3">
           <NextPreview chainIndex={nextIndex} label="NOW" />
