@@ -49,10 +49,10 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-const PAIRS: Record<Difficulty, number> = { easy: 6, normal: 8, hard: 10 };
+const PAIRS: Record<Difficulty, number> = { easy: 6, normal: 10, hard: 14 };
 
 function buildCards(pokemons: PokemonDex[], difficulty: Difficulty): CardState[] {
-  const selected = pokemons.slice(0, PAIRS[difficulty]);
+  const selected = shuffle(pokemons).slice(0, PAIRS[difficulty]);
   const doubled = selected.flatMap((pokemon, pairId) => [
     { pokemon, pairId, isFlipped: false, isMatched: false },
     { pokemon, pairId, isFlipped: false, isMatched: false },
