@@ -108,6 +108,13 @@
   }
 }
 
+/* ─── Pixel art rendering ─── */
+@layer utilities {
+  .pixelated {
+    image-rendering: pixelated;
+  }
+}
+
 /* ─── Dynamic semantic colors (dark-mode aware) ─── */
 @theme inline {
   --color-surface:          rgb(var(--surface));
