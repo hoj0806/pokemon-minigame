@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FaCaretUp, FaCaretDown, FaHeart, FaRegHeart } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import { usePokedexStore } from '../store/pokedexStore';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorView } from '../components/common/ErrorView';
@@ -32,6 +33,7 @@ const btnActive = 'bg-[#FFCB05] text-[#111827] font-bold shadow-[0_4px_0_0_#1118
 const btnInactive = 'bg-[#c8bfaf] text-[#111827] shadow-[0_4px_0_0_#111827] hover:bg-[#b8ae9e] active:shadow-[0_2px_0_0_#111827] active:translate-y-[2px]';
 
 export default function PokedexPage() {
+  const navigate = useNavigate();
   const { data, isLoading, error, loadGen1 } = usePokedexStore();
   const [selected, setSelected] = useState<PokemonDex | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>('id');
@@ -67,10 +69,20 @@ export default function PokedexPage() {
       >
         {/* 헤더 */}
         <div className="px-6 py-4 shrink-0 bg-[#EE1515]">
-          <h1 className="font-galmuri text-xl font-bold text-white drop-shadow-sm">
-            📖 포켓몬 도감
-          </h1>
-          <p className="text-xs text-red-100 mt-0.5 font-galmuri">1세대 151마리</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-galmuri text-xl font-bold text-white drop-shadow-sm">
+                📖 포켓몬 도감
+              </h1>
+              <p className="text-xs text-red-100 mt-0.5 font-galmuri">1세대 151마리</p>
+            </div>
+            <button
+              onClick={() => navigate('/')}
+              className="font-galmuri text-sm text-white border-2 border-white px-3 py-1.5 rounded-md shadow-[2px_2px_0_0_rgba(0,0,0,0.3)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 hover:bg-white hover:text-[#EE1515] transition-all duration-75 cursor-pointer"
+            >
+              ← 홈
+            </button>
+          </div>
 
           <div className="flex gap-2 mt-3">
             {SORT_BUTTONS.map(({ key, label }) => {
