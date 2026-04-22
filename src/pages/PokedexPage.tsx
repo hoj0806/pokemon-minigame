@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { FaCaretUp, FaCaretDown, FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { usePokedexStore } from '../store/pokedexStore';
-import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { ErrorView } from '../components/common/ErrorView';
 import { PokemonOrb } from '../components/pokedex/PokemonOrb';
 import { PokemonDetailModal } from '../components/pokedex/PokemonDetailModal';
 import { getBookmarks } from '../utils/bookmark';
@@ -34,7 +32,7 @@ const btnInactive = 'bg-[#c8bfaf] text-[#111827] shadow-[0_4px_0_0_#111827] hove
 
 export default function PokedexPage() {
   const navigate = useNavigate();
-  const { data, isLoading, error, loadGen1 } = usePokedexStore();
+  const { data } = usePokedexStore();
   const [selected, setSelected] = useState<PokemonDex | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>('id');
   const [order, setOrder] = useState<Order>('asc');
@@ -127,19 +125,15 @@ export default function PokedexPage() {
                      [&::-webkit-scrollbar-thumb]:border-2
                      [&::-webkit-scrollbar-thumb]:border-[#111827]"
         >
-          {isLoading && <LoadingSpinner />}
-          {error && <ErrorView message={error.message} onRetry={loadGen1} />}
-          {!isLoading && !error && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-              {displayed.map((pokemon) => (
-                <PokemonOrb
-                  key={pokemon.id}
-                  pokemon={pokemon}
-                  onSelect={setSelected}
-                />
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+            {displayed.map((pokemon) => (
+              <PokemonOrb
+                key={pokemon.id}
+                pokemon={pokemon}
+                onSelect={setSelected}
+              />
+            ))}
+          </div>
         </div>
       </div>
 

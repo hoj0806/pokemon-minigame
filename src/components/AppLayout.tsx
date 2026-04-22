@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useThemeStore } from '../store/themeStore';
 import { usePokedexStore } from '../store/pokedexStore';
+import { FullScreenLoader } from './common/FullScreenLoader';
 
 function PokeBallIcon({ className }: { className?: string }) {
   return (
@@ -17,11 +18,18 @@ function PokeBallIcon({ className }: { className?: string }) {
 
 export function AppLayout() {
   const { isDark, toggle } = useThemeStore();
-  const loadGen1 = usePokedexStore((s) => s.loadGen1);
+  const isLoading = usePokedexStore((s) => s.isLoading);
+  const hasLoaded = usePokedexStore((s) => s.hasLoaded);
+  const error     = usePokedexStore((s) => s.error);
+  const loadGen1  = usePokedexStore((s) => s.loadGen1);
 
   useEffect(() => {
     loadGen1();
   }, [loadGen1]);
+
+  if (isLoading || (!hasLoaded && error)) {
+    return <FullScreenLoader error={error} onRetry={loadGen1} />;
+  }
 
   return (
     <div className="min-h-screen">

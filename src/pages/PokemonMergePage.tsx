@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { usePokedexStore } from '../store/pokedexStore';
@@ -16,12 +16,6 @@ const HIGH_SCORE_KEY = 'highScore:merge';
 export default function PokemonMergePage() {
   const navigate = useNavigate();
   const pokemons = usePokedexStore((s) => s.data);
-  const loadGen1 = usePokedexStore((s) => s.loadGen1);
-  const isLoading = usePokedexStore((s) => s.isLoading);
-
-  useEffect(() => {
-    loadGen1();
-  }, [loadGen1]);
 
   const pokemonMap = new Map<number, PokemonDex>();
   pokemons.forEach((p) => pokemonMap.set(p.id, p));
@@ -163,10 +157,10 @@ export default function PokemonMergePage() {
         <button
           type="button"
           onClick={start}
-          disabled={isLoading || !chainComplete}
+          disabled={!chainComplete}
           className="font-galmuri bg-[#EE1515] text-[#FFCB05] font-bold px-10 py-3 rounded-[--radius-sm] border-2 border-[#111827] shadow-[0_4px_0_0_#111827] active:shadow-[0_1px_0_0_#111827] active:translate-y-[3px] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-[0_4px_0_0_#111827] disabled:translate-y-0 cursor-pointer"
         >
-          {isLoading ? '포켓몬 불러오는 중...' : '게임 시작'}
+          게임 시작
         </button>
 
         <button
