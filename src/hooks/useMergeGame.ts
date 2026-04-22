@@ -76,6 +76,27 @@ interface BodyData {
   spawnedAt: number;
 }
 
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  color: string;
+  createdAt: number;
+  lifetime: number;
+}
+
+interface ScorePopup {
+  x: number;
+  y: number;
+  text: string;
+  createdAt: number;
+  color: string;
+}
+
+const PARTICLE_COLORS = ['#FFCB05', '#EE1515', '#3B4CCA', '#FF6B35', '#A8E063', '#ffffff'];
+
 function randomDroppableIndex(): number {
   return Math.floor(Math.random() * (DROPPABLE_MAX_INDEX + 1));
 }
@@ -165,7 +186,6 @@ function createPokemonBody(
   x: number,
   y: number,
   chainIndex: number,
-  silhouette: Silhouette | null,
 ): Matter.Body {
   const entry = MERGE_CHAIN[chainIndex];
   const options: Matter.IBodyDefinition = {
@@ -175,21 +195,6 @@ function createPokemonBody(
     density: 0.002 + chainIndex * 0.0005,
     label: 'pokemon',
   };
-
-  if (silhouette) {
-    const { hull, bbox } = silhouette;
-    const cx = bbox.x + bbox.w / 2;
-    const cy = bbox.y + bbox.h / 2;
-    const maxHalf = Math.max(bbox.w, bbox.h) / 2;
-    const scale = entry.radius / maxHalf;
-    const verts = hull.map((p) => ({ x: (p.x - cx) * scale, y: (p.y - cy) * scale }));
-    const poly = Matter.Bodies.fromVertices(x, y, [verts], options);
-    if (poly && poly.vertices.length >= 3) {
-      setBodyData(poly, { chainIndex, merged: false, spawnedAt: performance.now() });
-      return poly;
-    }
-  }
-
   const body = Matter.Bodies.circle(x, y, entry.radius, options);
   setBodyData(body, { chainIndex, merged: false, spawnedAt: performance.now() });
   return body;
@@ -213,6 +218,8 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
   const pokemonMapRef = useRef(pokemonMap);
   const canDropRef = useRef<boolean>(false);
   const phaseRef = useRef<GamePhase>('idle');
+  const particlesRef = useRef<Particle[]>([]);
+  const scorePopupsRef = useRef<ScorePopup[]>([]);
 
   useEffect(() => {
     pokemonMapRef.current = pokemonMap;
@@ -230,6 +237,9 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
     if (state.phase !== 'playing') return;
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    particlesRef.current = [];
+    scorePopupsRef.current = [];
 
     const engine = Matter.Engine.create({
       gravity: { x: 0, y: 1, scale: 0.0012 },
@@ -262,6 +272,25 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
     let ended = false;
     let rafId = 0;
 
+    const spawnMergeParticles = (x: number, y: number, chainIndex: number) => {
+      const count = 8 + chainIndex * 2;
+      const now = performance.now();
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + Math.random() * 0.4;
+        const speed = 1.5 + Math.random() * 2.5;
+        particlesRef.current.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 1,
+          size: 2.5 + Math.random() * 3 + chainIndex * 0.3,
+          color: PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)],
+          createdAt: now,
+          lifetime: 500 + chainIndex * 30,
+        });
+      }
+    };
+
     const handleMerge = (a: Matter.Body, b: Matter.Body) => {
       const dataA = getBodyData(a);
       const dataB = getBodyData(b);
@@ -279,20 +308,34 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
       Matter.World.remove(engine.world, b);
 
       if (dataA.chainIndex >= MAX_CHAIN_INDEX) {
-        scoreRef.current += 1000;
-        dispatch({ type: 'SCORE', delta: 1000 });
+        const delta = 1000;
+        scoreRef.current += delta;
+        dispatch({ type: 'SCORE', delta });
+        spawnMergeParticles(midX, midY, MAX_CHAIN_INDEX);
+        scorePopupsRef.current.push({
+          x: midX, y: midY - 10,
+          text: `+${delta}`,
+          createdAt: performance.now(),
+          color: '#FFCB05',
+        });
         return;
       }
 
       const nextIndex = dataA.chainIndex + 1;
-      const nextEntry = MERGE_CHAIN[nextIndex];
-      const nextSilhouette = silhouetteCacheRef.current.get(nextEntry.pokemonId) ?? null;
-      const newBody = createPokemonBody(midX, midY, nextIndex, nextSilhouette);
+      const newBody = createPokemonBody(midX, midY, nextIndex);
       Matter.World.add(engine.world, newBody);
 
       const delta = (nextIndex + 1) * 10;
       scoreRef.current += delta;
       dispatch({ type: 'SCORE', delta });
+
+      spawnMergeParticles(midX, midY, nextIndex);
+      scorePopupsRef.current.push({
+        x: midX, y: midY - 10,
+        text: `+${delta}`,
+        createdAt: performance.now(),
+        color: nextIndex >= 6 ? '#FFCB05' : '#ffffff',
+      });
     };
 
     Matter.Events.on(engine, 'collisionStart', (event) => {
@@ -311,8 +354,22 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
 
     const drawFrame = () => {
       if (!ctx) return;
+      const now = performance.now();
+
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
+      // Background grid dots
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.1)';
+      const gridSize = 24;
+      for (let gx = WALL_THICKNESS + 12; gx < CANVAS_WIDTH - WALL_THICKNESS; gx += gridSize) {
+        for (let gy = DEADLINE_Y + 16; gy < CANVAS_HEIGHT - WALL_THICKNESS; gy += gridSize) {
+          ctx.beginPath();
+          ctx.arc(gx, gy, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Deadline line
       ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
       ctx.setLineDash([6, 4]);
       ctx.lineWidth = 1.5;
@@ -322,12 +379,15 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
       ctx.stroke();
       ctx.setLineDash([]);
 
+      // Walls
       ctx.fillStyle = 'rgba(120, 113, 108, 0.35)';
       ctx.fillRect(0, 0, WALL_THICKNESS, CANVAS_HEIGHT);
       ctx.fillRect(CANVAS_WIDTH - WALL_THICKNESS, 0, WALL_THICKNESS, CANVAS_HEIGHT);
       ctx.fillRect(0, CANVAS_HEIGHT - WALL_THICKNESS, CANVAS_WIDTH, WALL_THICKNESS);
 
       const bodies = Matter.Composite.allBodies(engine.world);
+
+      // Draw pokemon bodies
       for (const body of bodies) {
         if (body.label !== 'pokemon') continue;
         const data = getBodyData(body);
@@ -341,20 +401,15 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
 
         if (img && img.complete && img.naturalWidth > 0) {
           const sil = silhouetteCacheRef.current.get(entry.pokemonId);
-          if (sil) {
-            const maxHalf = Math.max(sil.bbox.w, sil.bbox.h) / 2;
-            const scale = entry.radius / maxHalf;
-            const dw = sil.bbox.w * scale;
-            const dh = sil.bbox.h * scale;
-            ctx.drawImage(img, sil.bbox.x, sil.bbox.y, sil.bbox.w, sil.bbox.h, -dw / 2, -dh / 2, dw, dh);
-          } else {
-            const size = entry.radius * 2.8;
-            ctx.drawImage(img, -size / 2, -size / 2, size, size);
-          }
+          const size = sil
+            ? (entry.radius * 2) * (Math.max(img.naturalWidth, img.naturalHeight) / Math.max(sil.bbox.w, sil.bbox.h))
+            : entry.radius * 2.8;
+          ctx.drawImage(img, -size / 2, -size / 2, size, size);
         }
         ctx.restore();
       }
 
+      // Dropper guide
       if (phaseRef.current === 'playing') {
         const dropperEntry = MERGE_CHAIN[pendingIndexRef.current];
         const dropperImg = imageCacheRef.current.get(dropperEntry.pokemonId);
@@ -363,33 +418,85 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
         ctx.globalAlpha = 0.9;
         if (dropperImg && dropperImg.complete && dropperImg.naturalWidth > 0) {
           const sil = silhouetteCacheRef.current.get(dropperEntry.pokemonId);
-          if (sil) {
-            const maxHalf = Math.max(sil.bbox.w, sil.bbox.h) / 2;
-            const scale = dropperEntry.radius / maxHalf;
-            const dw = sil.bbox.w * scale;
-            const dh = sil.bbox.h * scale;
-            ctx.drawImage(
-              dropperImg,
-              sil.bbox.x, sil.bbox.y, sil.bbox.w, sil.bbox.h,
-              -dw / 2, -dh / 2, dw, dh,
-            );
-          } else {
-            const size = dropperEntry.radius * 2.8;
-            ctx.drawImage(dropperImg, -size / 2, -size / 2, size, size);
-          }
+          const size = sil
+            ? (dropperEntry.radius * 2) * (Math.max(dropperImg.naturalWidth, dropperImg.naturalHeight) / Math.max(sil.bbox.w, sil.bbox.h))
+            : dropperEntry.radius * 2.8;
+          ctx.drawImage(dropperImg, -size / 2, -size / 2, size, size);
         }
-        ctx.globalAlpha = 0.4;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.globalAlpha = 0.35;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
         ctx.setLineDash([4, 6]);
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(0, dropperEntry.radius);
+        ctx.moveTo(0, dropperEntry.radius + 4);
         ctx.lineTo(0, CANVAS_HEIGHT - WALL_THICKNESS - DROPPER_Y);
         ctx.stroke();
         ctx.setLineDash([]);
         ctx.restore();
       }
 
-      const now = performance.now();
+      // Danger border pulse
+      const dangerBodies = bodies.filter((body) => {
+        if (body.label !== 'pokemon') return false;
+        const data = getBodyData(body);
+        if (!data) return false;
+        return now - data.spawnedAt > 800 && body.bounds.min.y < DEADLINE_Y + 30;
+      });
+
+      if (dangerBodies.length > 0) {
+        const pulse = 0.25 + 0.35 * Math.sin(now / 110);
+        ctx.save();
+        ctx.strokeStyle = `rgba(239, 68, 68, ${pulse})`;
+        ctx.lineWidth = 8;
+        ctx.strokeRect(4, 4, CANVAS_WIDTH - 8, CANVAS_HEIGHT - 8);
+        // inner glow
+        ctx.strokeStyle = `rgba(239, 68, 68, ${pulse * 0.4})`;
+        ctx.lineWidth = 20;
+        ctx.strokeRect(10, 10, CANVAS_WIDTH - 20, CANVAS_HEIGHT - 20);
+        ctx.restore();
+      }
+
+      // Particles
+      particlesRef.current = particlesRef.current.filter(
+        (p) => now - p.createdAt < p.lifetime,
+      );
+      for (const p of particlesRef.current) {
+        const age = (now - p.createdAt) / p.lifetime;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.08;
+        p.vx *= 0.97;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, 1 - age * 1.2);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 4;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * (1 - age * 0.6), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Score popups
+      scorePopupsRef.current = scorePopupsRef.current.filter(
+        (sp) => now - sp.createdAt < 900,
+      );
+      for (const sp of scorePopupsRef.current) {
+        const age = (now - sp.createdAt) / 900;
+        const currentY = sp.y - age * 50;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, 1 - age * 1.3);
+        ctx.font = `bold 15px Galmuri11, monospace`;
+        ctx.textAlign = 'center';
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(17, 24, 39, 0.9)';
+        ctx.strokeText(sp.text, sp.x, currentY);
+        ctx.fillStyle = sp.color;
+        ctx.fillText(sp.text, sp.x, currentY);
+        ctx.restore();
+      }
+
+      // Violator check
       const violator = bodies.find((body) => {
         if (body.label !== 'pokemon') return false;
         const data = getBodyData(body);
@@ -415,6 +522,8 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
       Matter.World.clear(engine.world, false);
       Matter.Engine.clear(engine);
       engineRef.current = null;
+      particlesRef.current = [];
+      scorePopupsRef.current = [];
     };
   }, [state.runId, state.phase]);
 
@@ -457,8 +566,7 @@ export function useMergeGame({ pokemonMap }: UseMergeGameArgs) {
       Math.max(dropperXRef.current, WALL_THICKNESS + entry.radius),
       CANVAS_WIDTH - WALL_THICKNESS - entry.radius,
     );
-    const silhouette = silhouetteCacheRef.current.get(entry.pokemonId) ?? null;
-    const body = createPokemonBody(clampedX, DROPPER_Y, pendingIndexRef.current, silhouette);
+    const body = createPokemonBody(clampedX, DROPPER_Y, pendingIndexRef.current);
     Matter.World.add(engine.world, body);
 
     const nextPreview = randomDroppableIndex();
