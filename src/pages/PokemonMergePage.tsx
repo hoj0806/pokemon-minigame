@@ -6,6 +6,7 @@ import { useMergeGame, CANVAS_WIDTH, CANVAS_HEIGHT } from '../hooks/useMergeGame
 import { HighScoreTable } from '../components/game/HighScoreTable';
 import { NameInputModal } from '../components/game/NameInputModal';
 import { NextPreview } from '../components/merge/NextPreview';
+import { MergeChainPreview } from '../components/merge/MergeChainPreview';
 import { MERGE_CHAIN } from '../utils/mergeChain';
 import { getHighScores, isTop5, addHighScore, getRank } from '../utils/highScore';
 import type { PokemonDex } from '../types/pokemon';
@@ -143,7 +144,7 @@ export default function PokemonMergePage() {
 
   if (phase === 'idle') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-57px)] gap-8 p-6">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-57px)] gap-6 p-6">
         <div className="text-center">
           <h1 className="font-galmuri text-2xl font-bold text-[--color-on-surface] mb-2">
             포켓몬 머지
@@ -155,18 +156,22 @@ export default function PokemonMergePage() {
           </p>
         </div>
 
+        <div className="w-full max-w-sm rounded-[--radius-card] bg-[--color-surface-raised] border-2 border-[--color-border] shadow-[0_4px_0_0_var(--color-border)] p-4 overflow-hidden">
+          <MergeChainPreview />
+        </div>
+
         <button
           type="button"
           onClick={start}
           disabled={isLoading || !chainComplete}
-          className="bg-brand hover:bg-brand-dark disabled:opacity-40 disabled:cursor-not-allowed text-white font-galmuri font-semibold px-8 py-3 rounded-[--radius-sm] transition-colors"
+          className="font-galmuri bg-[#EE1515] text-[#FFCB05] font-bold px-10 py-3 rounded-[--radius-sm] border-2 border-[#111827] shadow-[0_4px_0_0_#111827] active:shadow-[0_1px_0_0_#111827] active:translate-y-[3px] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-[0_4px_0_0_#111827] disabled:translate-y-0 cursor-pointer"
         >
           {isLoading ? '포켓몬 불러오는 중...' : '게임 시작'}
         </button>
 
         <button
           onClick={() => navigate('/game')}
-          className="text-sm text-[--color-on-surface-muted] hover:text-[--color-on-surface] transition-colors"
+          className="font-galmuri text-sm text-[--color-on-surface-muted] hover:text-[--color-on-surface] transition-colors"
         >
           ← 게임 선택으로 돌아가기
         </button>
@@ -217,19 +222,19 @@ export default function PokemonMergePage() {
       <div className="flex gap-2 items-center">
         <button
           onClick={() => moveDropper(-20)}
-          className="bg-[--color-surface-raised] border border-[--color-border] text-[--color-on-surface] font-galmuri px-4 py-2 rounded-[--radius-sm]"
+          className="font-galmuri bg-[--color-surface-raised] text-[--color-on-surface] font-bold px-5 py-2 rounded-[--radius-sm] border-2 border-[--color-border] shadow-[0_4px_0_0_var(--color-border)] active:shadow-[0_1px_0_0_var(--color-border)] active:translate-y-[3px] transition-all duration-75 cursor-pointer"
         >
           ←
         </button>
         <button
           onClick={drop}
-          className="bg-brand hover:bg-brand-dark text-white font-galmuri font-semibold px-6 py-2 rounded-[--radius-sm] transition-colors"
+          className="font-galmuri bg-[#EE1515] text-[#FFCB05] font-bold px-6 py-2 rounded-[--radius-sm] border-2 border-[#111827] shadow-[0_4px_0_0_#111827] active:shadow-[0_1px_0_0_#111827] active:translate-y-[3px] transition-all duration-75 cursor-pointer"
         >
           떨어뜨리기
         </button>
         <button
           onClick={() => moveDropper(20)}
-          className="bg-[--color-surface-raised] border border-[--color-border] text-[--color-on-surface] font-galmuri px-4 py-2 rounded-[--radius-sm]"
+          className="font-galmuri bg-[--color-surface-raised] text-[--color-on-surface] font-bold px-5 py-2 rounded-[--radius-sm] border-2 border-[--color-border] shadow-[0_4px_0_0_var(--color-border)] active:shadow-[0_1px_0_0_var(--color-border)] active:translate-y-[3px] transition-all duration-75 cursor-pointer"
         >
           →
         </button>
